@@ -6,7 +6,7 @@ use allensnape\controller\BaseController;
 class Index extends BaseController{
     
     public function index($field=null){
-        return $this->redirect(config('view_replace_str')['__ROOT__'].'/index.php/grownup/home/home');
+        return $this->redirect(config('view_replace_str')['__ROOT__'].'/index.php/admin/home/home');
     }
     
     /**

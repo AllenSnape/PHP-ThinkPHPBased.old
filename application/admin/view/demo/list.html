@@ -1,0 +1,94 @@
+{include file="public/header" /}
+<div class="container-fluid">
+    <!-- 按钮 -->
+    <div class="row">
+        <div class="col-md-12 buttons" align="right">
+            <button class="btn btn-default" onclick="additbox.add();">添加</button>
+            <button class="btn btn-default" onclick="reload();">刷新</button>
+        </div>
+    </div>
+
+    <!-- 列表 -->
+    <div class="row">
+        <table class="table table-hover col-md-12" id="domainList">
+            <thead>
+                <tr>
+                    <th>名称</th>
+                    <th>状态</th>
+                    <th>创建时间</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {:is_null($data.rows) || count($data.rows) == 0 ? '<tr><td colspan="4" class="no-data">暂无数据</td></tr>' : ''}
+                {volist name="data.rows" id="row"}
+                    <tr>
+                        <td style="display:none;" id="tablerow_{$row.id}">
+                            {$row|json_encode}
+                        </td>
+                        <td class="text-overflow-ellipsis" style="max-width:120px;" title="{$row.name}">{$row.name}</td>
+                        <td>{$row.disabled == 0 ? '有效' : '无效'}</td>
+                        <td class="fromUnixtimestamp">{$row.create_time}</td>
+                        <td>
+                            <button class="btn btn-primary btn-sm" onclick="additbox.edit('修改{$row.title}', $('#tablerow_{$row.id}').html());">修改</button>
+                            <button class="btn btn-danger btn-sm" onclick="dis('{$row.id}', 1);">删除</button>
+                        </td>
+                    </tr>
+                {/volist}
+            </tbody>
+        </table>
+    </div>
+
+    {include file="public/pagination" /}
+
+    <table id="additbox" class="additbox">
+        <tbody>
+            <tr>
+                <td class="">名称</td>
+                <td><input type="text" class="form-control" name="name" placeholder="" /></td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <input type="hidden" class="form-control" name="id" />
+                    <button class="btn btn-primary" onclick="additbox.save();">确定</button>
+                    <button class="btn btn-danger" onclick="additbox.hideAdditbox();">取消</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    {include file="public/additbox" /}
+    <script>
+        var additbox = initAdditbox({
+            box:            $('#additbox'),
+            width:          '500px',
+            height:         '150px',
+            addURL:         'add.html?ajax',
+            addTitle:       '添加',
+            editURL:        'edit.html?ajax',
+            beforeAdd:      function(ab){
+                
+            },
+            beforeEdit:     function(ab, title, data){
+                
+            },
+        });
+
+        function dis(id, disabled){
+            layer.confirm('确定删除?', {btn: ['确认', '取消']}, function(){
+                $.ajax({
+                    url: 'dis.html?ajax',
+                    data: {
+                        id:         id,
+                        disabled:   disabled
+                    },
+                    succeeded: function(data){
+                        reload();
+                        return true;
+                    }
+                });
+            });
+        }
+    </script>
+
+</div>
+{include file="public/footer" /}

@@ -1,0 +1,53 @@
+{include file="public/header" /}
+<style>
+    html, body {
+        height: 100%;
+    }
+    #container{
+        height: 100%;
+    }
+    #container > .row{
+        margin-left: -15px;
+        margin-right: -15px;
+        height: 100%;
+    }
+    @media (min-width: 992px){
+        #menubox{
+            height: 100%;
+        }
+    }
+    #iframebox{
+        height: 100%;
+    }
+    #iframebox > .row{
+        height: calc(100% - 52px);
+    }
+    @media (max-width: 992px){
+        #iframebox{
+            height: calc(100% - 52px);
+        }
+        #iframebox > .row{
+            height: calc(100% - 4px);
+        }
+    }
+    #iframe{
+        width: 100%;
+        height: 100%;
+        border: none;
+        padding: 0px;
+    }
+</style>
+<div class="container-fluid" id="container">
+    <div class="row">
+        <div class="col-md-2" id="menubox">
+            {include file="public/menu" /}
+        </div>
+        <div class="col-md-10" id="iframebox">
+            {include file="public/navigation" /}
+            <div class="row">
+                <iframe class="col-md-12" id="iframe"></iframe>
+            </div>
+        </div>
+    </div>
+</div>
+{include file="public/footer" /}

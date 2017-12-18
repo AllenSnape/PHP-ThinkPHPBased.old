@@ -1,0 +1,138 @@
+<!-- 分页代码 -->
+<div class="row" id="paginationBox">
+    <style>
+        #pageSize{
+            margin-top: 20px;
+        }
+        .paginationInputBox{
+            display: inline-block;
+            vertical-align: top;
+            margin-top: 20px;
+        }
+        @media (max-width: 768px){
+            .paginationInputBox{
+                margin-top: 20px;
+                margin-bottom: 20px;
+            }
+            #pagination{
+                margin-bottom: 0px;
+            }
+        }
+        .paginationInputBox > button{
+            vertical-align: top;
+        }
+        #paginationInput{
+            max-width: 100px;
+            display: inline-block;
+        }
+    </style>
+    <div class="col-md-2">
+        <select class="form-control" id="pageSize" onchange="goPage(1);">
+            <option value="1" {$data.pageSize == 1 ? 'selected' : ''}>每页1条(仅供测试)</option>
+            <option value="5" {$data.pageSize == 5 ? 'selected' : ''}>每页5条</option>
+            <option value="15" {$data.pageSize == 15 ? 'selected' : ''}>每页15条</option>
+            <option value="30" {$data.pageSize == 30 ? 'selected' : ''}>每页30条</option>
+            <option value="50" {$data.pageSize == 50 ? 'selected' : ''}>每页50条</option>
+            <option value="100" {$data.pageSize == 100 ? 'selected' : ''}>每页100条</option>
+        </select>
+    </div>
+    <div class="col-md-10" align="center">
+        <ul class="pagination" id="pagination"></ul>
+        <div class="paginationInputBox">
+            <input class="form-control" type="text" id="paginationInput" onkeyup="if(arguments[0]['keyCode'] == 13) jumpPage();" />
+            <button class="btn btn-default" onclick="jumpPage();">跳转</button>
+            <span id="paginationInfo"></span>
+        </div>
+    </div>
+    <form style="display: none;" id="pageForm" action="{$Request.action}{$defaultParams??''}" method="post">
+        <input type="text" name="pageNum" value="1" />
+        <input type="text" name="pageSize" value="15" />
+        <input type="text" name="psort" value="{$Request.param.psort}"/>
+        <input type="text" name="porder" value="{$Request.param.porder}" />
+        <input type="text" name="porderby" value="{$Request.param.porderby}" />
+    </form>
+</div>
+<script>
+    // 输入跳转
+    function jumpPage(){
+        var maxpagenum = $("#paginationInput").attr('maxpagenum');
+        var pagenum = $("#paginationInput").val();
+        maxpagenum = parseInt(maxpagenum);
+        pagenum = parseInt(pagenum);
+        if(!isNaN(pagenum) && pagenum <= maxpagenum){
+            goPage(pagenum);
+        }else{
+            $("#paginationInput").val('');
+        }
+    }
+
+    // 翻页
+    function goPage(pageNum){
+        var form = $("#pageForm");
+        form.children("input[name=pageNum]").val(pageNum ? pageNum : 1);
+        form.children("input[name=pageSize]").val($("#pageSize").val());
+        form.attr('action', location.pathname+location.search);
+        form.submit();
+    }
+
+    const defaultPageArrLength = 7;
+    // 初始化分页按钮
+    function initPage(currPageNum, currPageSize, total){
+        // 最大页码
+        var maxPage = parseInt((total / currPageSize) + ((total % currPageSize) == 0 ? 0 : 1));
+        if(currPageNum > maxPage){
+            $("#paginationBox").hide();
+            return false;
+        }
+        // 页码按钮数量, 如果最大页码小于默认的数量, 则已最大页码作为按钮数量
+        var pageArrLength = maxPage < defaultPageArrLength ? maxPage : defaultPageArrLength;
+
+        // 拼接上一页按钮
+        $("#pagination").append(`<li `+(currPageNum == 1 ? 'class="disabled"' : 'onclick="goPage('+(currPageNum-1)+');"')+`>
+            <a href="#">
+                <span>&laquo;</span>
+            </a>
+        </li>`);
+
+        // 以当前页码为中心, 向左右两边延伸的页码数量
+        var scope = parseInt(defaultPageArrLength/2);
+        // 开始输出的页码
+        var startPage = currPageNum - scope;
+        startPage = startPage < 1 ? 1 : startPage;
+        var endPage = startPage + pageArrLength;
+        if(endPage > maxPage){
+            endPage = maxPage + 1;
+            var offset = scope - (maxPage - currPageNum);
+            offset = offset < 0 ? 0 : offset;
+            startPage = startPage - scope < 1 ? 1 : (startPage - offset);
+        }
+        if(startPage != 1){
+            $("#pagination").append(`<li onclick="goPage(1);"><a href="#">1</a></li>`+(currPageNum-scope > 2 ? `<li onclick="goPage(1);"><a href="#">...</a></li>` : ``));
+        }
+        for(; startPage < endPage; startPage++){
+            $("#pagination").append(`<li `+(currPageNum == startPage ? `class="active"` : `onclick="goPage(`+startPage+`);"`)+`><a href="#">`+startPage+`</a></li>`);
+        }
+        if(maxPage+1 > endPage){
+            $("#pagination").append((maxPage - currPageNum - scope > 1 ? `<li onclick="goPage(`+maxPage+`);"><a href="#">...</a></li>` : ``)+`<li onclick="goPage(`+maxPage+`);"><a href="#">`+maxPage+`</a></li>`);
+        }
+
+        // 拼接下一页按钮
+        $("#pagination").append(`<li `+(currPageNum == maxPage ? 'class="disabled"' : 'onclick="goPage('+(currPageNum+1)+');"')+`>
+            <a href="#">
+                <span>&raquo;</span>
+            </a>
+        </li>`);
+
+        // 展示分页信息
+        $("#paginationInfo").text('共 '+maxPage+' 页 合计'+total+'条数据');
+        $("#paginationInput").attr('maxpagenum', maxPage);
+        // 根据最大页数字符长度确定跳转输入框的长度
+        $("#paginationInput").css({
+            width:      ((maxPage+'').length*10+24)+'px'
+        });
+    }
+
+    $(function(){
+        initPage({$data.pageNum}, {$data.pageSize}, {$data.total});
+    });
+</script>

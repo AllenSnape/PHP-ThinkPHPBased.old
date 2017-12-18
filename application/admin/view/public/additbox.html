@@ -1,0 +1,88 @@
+<!-- 表单初始化脚本 -->
+<script>
+    function initAdditbox(options){
+        var defaultOptions = {
+            box:            $('#additbox'),
+            width:          '500px',
+            height:         '360px',
+            addURL:         'add.html?ajax',
+            addTitle:       '添加',
+            editURL:        'edit.html?ajax',
+            beforeAdd:      function(additbox){},
+            beforeEdit:     function(additbox, title, data){},
+            afterSaved:     function(additbox, data){reload();return true;}
+        };
+        for(var o in defaultOptions){
+            if(options[o]){
+                defaultOptions[o] = options[o];
+            }
+        }
+
+        return {
+            additboxLayer: undefined,
+            showAdditbox: function(title, url){
+                defaultOptions['box'].attr('action', url);
+                this.additboxLayer = layer.open({
+                    type: 1,
+                    title: title === undefined ? '标题' : title,
+                    area: [defaultOptions['width'], defaultOptions['height']],
+                    content: defaultOptions['box'],
+                    success: function(layero, index){
+                        defaultOptions['box'].show();
+                    },
+                    end: function(){
+                        defaultOptions['box'].hide();
+                    }
+                });
+            },
+            hideAdditbox: function(){
+                layer.close(this.additboxLayer);
+            },
+            add: function(){
+                defaultOptions['box'].find('input,select,textarea').val('');
+                defaultOptions['box'].find('select').each(function(index, item){
+                    $(item).val($(item).children('option[selected]').attr('value'));
+                });
+                
+                if(defaultOptions['beforeAdd'] && defaultOptions['beforeAdd'] instanceof Function){
+                    defaultOptions['beforeAdd'].call(this, defaultOptions['box']);
+                }
+                this.showAdditbox(defaultOptions['addTitle'], defaultOptions['addURL']);
+            },
+            edit: function(title, data){
+                if(defaultOptions['beforeEdit'] && defaultOptions['beforeEdit'] instanceof Function){
+                    defaultOptions['beforeEdit'].call(this, defaultOptions['box'], title, data);
+                }
+                this.showAdditbox(title, defaultOptions['editURL']);
+                try{
+                    data = JSON.parse(data);
+                    for(var field in data){
+                        defaultOptions['box'].find('[name='+field+']').val(data[field]);
+                    }
+                }catch(e){
+                    layer.syserror(e);
+                }
+            },
+            save: function(){
+                var thiz = this;
+                var data = {};
+                defaultOptions['box'].find('[name]').each(function(index, item){
+                    item = $(item);
+                    data[item.attr('name')] = item.val();
+                });
+
+                // 提交数据
+                $.ajax({
+                    url: defaultOptions['box'].attr("action"),
+                    data: data,
+                    succeeded: function(data){
+                        if(defaultOptions['afterSaved'] && defaultOptions['afterSaved'] instanceof Function){
+                            return defaultOptions['afterSaved'].call(this, defaultOptions['box'], data);
+                        }
+                        return true;
+                    }
+                });
+            }
+        };
+    }
+</script>

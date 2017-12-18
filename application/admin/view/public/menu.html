@@ -1,0 +1,92 @@
+<style>
+    @media (min-width: 992px){
+        #menu{
+            height: 100%;
+            border-radius: 0px;
+        }
+        #menu .navbar-nav{
+            float: none;
+            margin-top: 50px;
+            margin-left: -30px;
+            margin-right: -30px;
+        }
+        #menu .navbar-nav > li{
+            position: relative;
+            display: block;
+            float: none;
+        }
+        #menu .dropdown-menu{
+            position: static;
+            float: none;
+            width: auto;
+            margin-top: 0;
+            background-color: transparent;
+            border: 0;
+            -webkit-box-shadow: none;
+            box-shadow: none;
+        }
+        #menu .dropdown-menu > .active > a{
+            color: #555;
+            background-color: #e7e7e7;
+        }
+        #menu li.active.keepdropdown-on-active > .dropdown-menu{
+            display: block;
+        }
+        #menu .navbar-default .navbar-nav .open .dropdown-menu > li > a:hover{
+            color: #333;
+            background-color: transparent;
+        }
+    }
+</style>
+<script>
+    $(function(){
+        $('#menu li').bind({
+            click: function(){
+                $(this).siblings().removeClass('active');
+                $(this).addClass('active');
+            }
+        });
+
+        $('#menu a[go]').bind({
+            click: function(){
+                $('#iframe').attr('src', $(this).attr('go'));
+            }
+        });
+    });
+</script>
+<nav class="navbar navbar-default" role="navigation" id="menu">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#menulist">
+                <span class="sr-only">切换导航</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">管理系统</a>
+        </div>
+        <div class="collapse navbar-collapse" id="menulist">
+            <ul class="nav navbar-nav">
+                <li><a href="#" go="../home/demoListPage.html?disabled=0&porder=create_time&psort=desc">Demo</a></li>
+                <li class="dropdown keepdropdown-on-active">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Java <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">jmeter</a></li>
+                        <li><a href="#">EJB</a></li>
+                        <li><a href="#">Jasper Report</a></li>
+                        <li class="divider"></li>
+                        <li><a href="#">分离的链接</a></li>
+                        <li class="divider"></li>
+                        <li><a href="#">另一个分离的链接</a></li>
+                    </ul>
+                </li>
+                <li class="visible-sm-block visible-xs-block dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"> 其他 <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        {include file="public/navbar-right" /}
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>

@@ -10,7 +10,7 @@ $.ajaxSetup({
     dataType: 'json',
     global: true,
     success: function(data){
-        if(!this.noneCheck()){
+        if(!this.noneCheck(data)){
             if(data && data.result === 1){
                 this.succeeded(data);
             }else{

@@ -1,7 +1,9 @@
 <?php
 namespace app\admin\model;
 
-//use think\Session;
+use think\Session;
+
+use app\admin\controller\AdminBaseController;
 use allensnape\model\BaseModel;
 
 abstract class AdminBaseModel extends BaseModel{
@@ -12,11 +14,11 @@ abstract class AdminBaseModel extends BaseModel{
         $this['create_time'] = $now;
         $this['update_time'] = $now;
 
-        /* $loginedAdmin = Session::get(AdminController::USER_SESSION_CODE);
+        $loginedAdmin = Session::get(AdminBaseController::USER_SESSION_CODE);
         if($loginedAdmin != null){
             $this['create_by'] = $loginedAdmin['id'];
             $this['update_by'] = $this['create_by'];
-        } */
+        }
 
         if($autoGenId) $this->genID();
 
@@ -27,10 +29,10 @@ abstract class AdminBaseModel extends BaseModel{
     public function beforeEdit(){
         $this['update_time'] = time();
 
-        /* $loginedAdmin = Session::get(AdminController::USER_SESSION_CODE);
+        $loginedAdmin = Session::get(AdminBaseController::USER_SESSION_CODE);
         if($loginedAdmin != null){
             $this['update_by'] = $loginedAdmin['id'];
-        } */
+        }
 
         return $this;
     }

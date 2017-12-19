@@ -1,8 +1,16 @@
 {include file="public/header" /}
+<script src="__ROOT__/js/additbox.js"></script>
 <div class="container-fluid">
+    <!-- 面包屑 -->
+    <ol class="breadcrumb">
+        <li><a href="#">Home</a></li>
+        <li><a href="#">Library</a></li>
+        <li class="active">Data</li>
+    </ol>
+
     <!-- 按钮 -->
-    <div class="row">
-        <div class="col-md-12 buttons" align="right">
+    <div class="row buttons">
+        <div class="col-md-12" align="right">
             <button class="btn btn-default" onclick="additbox.add();">添加</button>
             <button class="btn btn-default" onclick="reload();">刷新</button>
         </div>
@@ -44,7 +52,7 @@
     <table id="additbox" class="additbox">
         <tbody>
             <tr>
-                <td class="">名称</td>
+                <td class="rqd">名称</td>
                 <td><input type="text" class="form-control" name="name" placeholder="" /></td>
             </tr>
             <tr>
@@ -56,7 +64,6 @@
             </tr>
         </tbody>
     </table>
-    {include file="public/additbox" /}
     <script>
         var additbox = initAdditbox({
             box:            $('#additbox'),
@@ -64,13 +71,7 @@
             height:         '150px',
             addURL:         'add.html?ajax',
             addTitle:       '添加',
-            editURL:        'edit.html?ajax',
-            beforeAdd:      function(ab){
-                
-            },
-            beforeEdit:     function(ab, title, data){
-                
-            },
+            editURL:        'edit.html?ajax'
         });
 
         function dis(id, disabled){

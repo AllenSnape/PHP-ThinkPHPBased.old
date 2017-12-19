@@ -1,5 +1,5 @@
 <!-- 分页代码 -->
-<div class="row" id="paginationBox">
+<div class="row" id="paginationBox" style="display: none;">
     <style>
         #pageSize{
             margin-top: 20px;
@@ -81,8 +81,9 @@
         // 最大页码
         var maxPage = parseInt((total / currPageSize) + ((total % currPageSize) == 0 ? 0 : 1));
         if(currPageNum > maxPage){
-            $("#paginationBox").hide();
             return false;
+        }else{
+            $("#paginationBox").show();
         }
         // 页码按钮数量, 如果最大页码小于默认的数量, 则已最大页码作为按钮数量
         var pageArrLength = maxPage < defaultPageArrLength ? maxPage : defaultPageArrLength;

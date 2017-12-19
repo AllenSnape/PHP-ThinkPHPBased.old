@@ -6,5 +6,83 @@
         <ul class="nav navbar-nav navbar-right"> 
             {include file="public/navbar-right" /}
         </ul>
+        <script>
+            // 登出
+            function logout(){
+                $.ajax({
+                    url: "logout.html?ajax",
+                    success: function(data){
+                        location.href = "__ROOT__/";
+                    }
+                });
+            }
+
+            var editinfoBox = 0;
+
+            // 弹出修改信息弹窗
+            function showEditinfoBox(){
+                editinfoBox = layer.open({
+                    type: 1,
+                    title: "修改密码",
+                    area: ['500px', '240px'], //宽高
+                    content: `
+                        <div class="row" id="navigationEditboxForm" style="margin: 0px; padding: 10px;">
+                            <input style="margin-top: 10px;" type="password" class="form-control col-md-12" placeholder="请输入旧密码" required="" name="oldPassword" />
+                            <input style="margin-top: 10px;" type="password" class="form-control col-md-12" placeholder="请输入新密码" required="" name="password" />
+                            <input style="margin-top: 10px;" type="password" class="form-control col-md-12" placeholder="请再次输入新密码" required="" name="repassword" />
+                            <div class="col-md-12" align="center" style="margin-top: 10px;">
+                                <button style="width: 100px;" type="button" class="btn btn-primary" onclick="editinfo();">确认</button>
+                                <button style="width: 100px; margin-left: 20px;" type="button" class="btn btn-danger" onclick="hideEditinfoBox();">取消</button>
+                            </div>
+                        </div>`
+                });
+            }
+
+            // 隐藏修改信息弹窗
+            function hideEditinfoBox(){
+                layer.close(editinfoBox);
+            }
+
+            // 修改信息
+            function editinfo(){
+                var form = $("#navigationEditboxForm");
+                var oldPassword = form.find("input[name=oldPassword]").val();
+                var password = form.find("input[name=password]").val();
+                var repassword = form.find("input[name=repassword]").val();
+
+                var passwordReg = /^.{6,16}$/;
+                if(!passwordReg.test(oldPassword)){
+                    layer.alert("请输入6-16位的旧密码!", {icon: 7});
+                }
+                else if(!passwordReg.test(password)){
+                    layer.alert("请输入6-16位的新密码!", {icon: 7});
+                }
+                else if(password != repassword){
+                    layer.alert("两次输入的新密码不一致!", {icon: 7});
+                }
+                else{
+                    $.ajax({
+                        url: "editinfo.html?ajax",
+                        type: "post",
+                        data: {
+                            password: password,
+                            oldPassword: oldPassword
+                        },
+                        dataType: "json",
+                        success: function(data){
+                            if(data.result == 1){
+                                layer.alert("修改成功!", {icon: 1});
+                                location.href = "__ROOT__/index.php";
+                            }else{
+                                layer.alert(data.message, {icon: 2});
+                            }
+                        },
+                        error: function(e){
+                            layer.syserror();
+                        }
+                    });
+                }
+            }
+        </script>
     </div>
 </nav>

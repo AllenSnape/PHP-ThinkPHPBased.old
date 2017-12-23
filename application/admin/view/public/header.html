@@ -34,6 +34,25 @@
 			function reload(){
 				location.href = '{$Request.action}.html{$defaultParams??"?"}';
 			}
+
+			/**
+			* 上传图片集成方法
+			* @param input标签 input 文件input标签
+			* @param Funtion callback 成功获取信息后的回调
+			*/
+			function uploadFile(input, callback){
+				var formData = new FormData();
+				formData.append("file", $(input)[0].files[0]);
+				$.ajax({
+					url: "__ROOT__/index.php/index/index/upload",
+					data: formData,
+					processData: false, 
+					contentType: false,
+					succeeded: function(data){
+						if(callback instanceof Function) callback('__ROOT__' + data.data.replace(/\\/gi, '/'));
+					}
+				});
+			}
 		</script>
 
 	</head>

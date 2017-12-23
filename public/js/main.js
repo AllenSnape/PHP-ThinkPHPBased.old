@@ -68,25 +68,6 @@ function getFormattedTime(date){
     return date.getFullYear()+"-"+(date.getMonth() < 9 ? '0' : '')+(date.getMonth()+1)+"-"+(date.getDate() < 10 ? '0' : '')+date.getDate()+" "+(date.getHours() < 10 ? '0' : '')+date.getHours()+":"+(date.getMinutes() < 10 ? '0' : '')+date.getMinutes()+":"+(date.getSeconds() < 10 ? '0' : '')+date.getSeconds();
 }
 
-/**
-* 
-* @param input标签 input 文件input标签
-* @param Funtion callback 成功获取信息后的回调
-*/
-function uploadFile(input, callback){
-    var formData = new FormData();
-    formData.append("file", $(input)[0].files[0]);
-    $.ajax({
-        url: "__ROOT__/index.php/index/index/upload",
-        data: formData,
-        processData: false, 
-        contentType: false,
-        succeeded: function(data){
-            if(callback instanceof Function) callback('__ROOT__' + data.data);
-        }
-    });
-}
-
 // 获取cookie
 function getCookie(name){
     var arr, reg = new RegExp("(^| )" + name + "=([^;]*)(;|$)");

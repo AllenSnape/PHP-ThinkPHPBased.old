@@ -3,23 +3,16 @@
 <div class="container-fluid">
     <!-- 面包屑 -->
     <ol class="breadcrumb">
-        <li><a href="#">管理员管理</a></li>
-        <li class="active">管理员列表</li>
+        <li><a href="#">Home</a></li>
+        <li><a href="#">Library</a></li>
+        <li class="active">Data</li>
     </ol>
+
     <!-- 按钮 -->
     <div class="row buttons">
-        <div class="col-md-2">
-            <input class="form-control" type="text" placeholder="搜索电话号码" id="searchFieldMobile" value="{$Request.param.mobile}">
-        </div>
-        <div class="col-md-2">
-            <input class="form-control" type="text" placeholder="搜索姓名" id="searchFieldName" value="{$Request.param.name}">
-        </div>
-        <div class="col-md-2" align="left">
-            <button class="btn btn-success" onclick="location.href = '{$Request.action}.html?mobile='+$('#searchFieldMobile').val()+'&name='+$('#searchFieldName').val();">搜索</button>
-            <button class="btn btn-default" onclick="reload();">刷新</button>
-        </div>
-        <div class="col-md-6" align="right">
+        <div class="col-md-12" align="right">
             <button class="btn btn-default" onclick="additbox.add();">添加</button>
+            <button class="btn btn-default" onclick="reload();">刷新</button>
         </div>
     </div>
 
@@ -28,29 +21,20 @@
         <table class="table table-hover col-md-12" id="domainList">
             <thead>
                 <tr>
-                    <th>账号</th>
-                    <th>姓名</th>
-                    <th>电话</th>
-                    <th>备注</th>
+                    <th>名称</th>
                     <th>状态</th>
                     <th>创建时间</th>
                     <th>操作</th>
                 </tr>
             </thead>
             <tbody>
-                {:is_null($data.rows) || count($data.rows) == 0 ? '<tr><td colspan="7" class="no-data">暂无数据</td></tr>' : ''}
+                {:is_null($data.rows) || count($data.rows) == 0 ? '<tr><td colspan="4" class="no-data">暂无数据</td></tr>' : ''}
                 {volist name="data.rows" id="row"}
                     <tr>
                         <td style="display:none;" id="tablerow_{$row.id}">
-                            {php}
-                                $row['password'] = null;
-                            {/php}
                             {$row|json_encode}
                         </td>
-                        <td>{$row.username}</td>
-                        <td>{$row.name}</td>
-                        <td>{$row.mobile}</td>
-                        <td class="text-overflow-ellipsis" style="max-width:120px;" title="{$row.remark}">{$row.remark}</td>
+                        <td class="text-overflow-ellipsis" style="max-width:120px;" title="{$row.name}">{$row.name}</td>
                         <td>{$row.disabled == 0 ? '有效' : '无效'}</td>
                         <td class="fromUnixtimestamp">{$row.create_time}</td>
                         <td>
@@ -68,24 +52,8 @@
     <table id="additbox" class="additbox">
         <tbody>
             <tr>
-                <td class="rqd">账号</td>
-                <td><input type="text" class="form-control" name="username" placeholder="6-16位中英文数字以及下划线" /></td>
-            </tr>
-            <tr>
-                <td class="rqd">密码</td>
-                <td><input type="text" class="form-control" name="password" placeholder="" /></td>
-            </tr>
-            <tr>
-                <td class="">姓名</td>
+                <td class="rqd">名称</td>
                 <td><input type="text" class="form-control" name="name" placeholder="" /></td>
-            </tr>
-            <tr>
-                <td class="">电话</td>
-                <td><input type="text" class="form-control" name="mobile" placeholder="" /></td>
-            </tr>
-            <tr>
-                <td class="">备注</td>
-                <td><input type="text" class="form-control" name="remark" placeholder="" /></td>
             </tr>
             <tr>
                 <td colspan="2">
@@ -100,22 +68,10 @@
         var additbox = initAdditbox({
             box:            $('#additbox'),
             width:          '500px',
-            height:         '330px',
+            height:         '150px',
             addURL:         'add.html?ajax',
             addTitle:       '添加',
-            editURL:        'edit.html?ajax',
-            beforeAdd: function(){
-                $('#additbox').find('input[name=password]').attr('placeholder', '至少6位的任意字符');
-                return true;
-            },
-            beforeEdit: function(){
-                $('#additbox').find('input[name=password]').attr('placeholder', '至少6位的任意字符; 不输入则不修改');
-                return true;
-            },
-            beforeSave: function(box, data){
-                data['is_admin'] = 1;
-                return true;
-            }
+            editURL:        'edit.html?ajax'
         });
 
         function dis(id, disabled){

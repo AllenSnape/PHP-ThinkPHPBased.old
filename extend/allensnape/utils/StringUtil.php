@@ -34,7 +34,7 @@ class StringUtil
 
     // 判断字符串是否包含内容(不包括不可见字符\s)
     public static function hasText($str){
-        return !is_null($str) && preg_match('/^.*\S+.*$/', $str);
+        return !is_null($str) && preg_match('/^\S+$/', preg_replace('/\s/', '', $str));
     }
 
 }

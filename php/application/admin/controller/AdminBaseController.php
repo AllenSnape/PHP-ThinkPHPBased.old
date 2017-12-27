@@ -11,7 +11,7 @@ use allensnape\controller\BaseController;
 
 class AdminBaseController extends BaseController{
 
-    const USER_SESSION_CODE = 'userSessionCode_20171219_allensnape';
+    const USER_SESSION_CODE = 'userSessionCode_allensnape';
     
     public function _initialize() {
         
@@ -39,7 +39,7 @@ class AdminBaseController extends BaseController{
                         'content'     => json_encode($request->param()),
                         'remote_ip'   => $this->get_client_ip(),
                         'request_uri' => $request->url(),
-                        'user_agent'  => $this->get_client_browser(),
+                        'user_agent'  => $this->get_client_browser(' '),
                         'method'      => $request->method(),
                         'create_time' => time()
                     ]);

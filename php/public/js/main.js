@@ -14,7 +14,7 @@ $.ajaxSetup({
             if(data && data.result === 1){
                 this.succeeded(data);
             }else{
-                if(!this.failed(data)) layer.alert(data.message, {icon: 2});
+                if(!this.failed(data)) layer.alert(data.message, {icon: 5});
             }
         }
     },

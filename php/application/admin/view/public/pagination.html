@@ -1,31 +1,5 @@
 <!-- 分页代码 -->
 <div class="row" id="paginationBox" style="display: none;">
-    <style>
-        #pageSize{
-            margin-top: 20px;
-        }
-        .paginationInputBox{
-            display: inline-block;
-            vertical-align: top;
-            margin-top: 20px;
-        }
-        @media (max-width: 768px){
-            .paginationInputBox{
-                margin-top: 20px;
-                margin-bottom: 20px;
-            }
-            #pagination{
-                margin-bottom: 0px;
-            }
-        }
-        .paginationInputBox > button{
-            vertical-align: top;
-        }
-        #paginationInput{
-            max-width: 100px;
-            display: inline-block;
-        }
-    </style>
     <div class="col-md-2">
         <select class="form-control" id="pageSize" onchange="goPage(1);">
             <option value="1" {$data.pageSize == 1 ? 'selected' : ''}>每页1条(仅供测试)</option>
@@ -36,7 +10,7 @@
             <option value="100" {$data.pageSize == 100 ? 'selected' : ''}>每页100条</option>
         </select>
     </div>
-    <div class="col-md-10" align="center">
+    <div class="col-md-8" align="center">
         <ul class="pagination" id="pagination"></ul>
         <div class="paginationInputBox">
             <input class="form-control" type="text" id="paginationInput" onkeyup="if(arguments[0]['keyCode'] == 13) jumpPage();" />
@@ -44,13 +18,15 @@
             <span id="paginationInfo"></span>
         </div>
     </div>
-    <form style="display: none;" id="pageForm" action="{$Request.action}{$defaultParams??''}" method="post">
-        <input type="text" name="pageNum" value="1" />
-        <input type="text" name="pageSize" value="15" />
-        <input type="text" name="psort" value="{$Request.param.psort}"/>
-        <input type="text" name="porder" value="{$Request.param.porder}" />
-        <input type="text" name="porderby" value="{$Request.param.porderby}" />
-    </form>
+    <div class="col-md-2">
+        <form style="display: none;" id="pageForm" action="{$Request.action}{$defaultParams??''}" method="post">
+            <input type="text" name="pageNum" value="1" />
+            <input type="text" name="pageSize" value="15" />
+            <input type="text" name="psort" value="{$Request.param.psort}"/>
+            <input type="text" name="porder" value="{$Request.param.porder}" />
+            <input type="text" name="porderby" value="{$Request.param.porderby}" />
+        </form>
+    </div>
 </div>
 <script>
     // 输入跳转

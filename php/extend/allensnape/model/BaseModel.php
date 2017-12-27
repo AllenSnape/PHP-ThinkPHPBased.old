@@ -19,8 +19,8 @@ abstract class BaseModel extends Model
     /**
      * 数据库查询分页
      * 自动读取请求数据中的参数
-     * @param pageNum 页码
-     * @param pageSize 每页数量
+     * @param integer:pageNum 页码
+     * @param integer:pageSize 每页数量
      * @return $this
      */
     public function startPage($pageNum=null, $pageSize=null){
@@ -38,7 +38,7 @@ abstract class BaseModel extends Model
 
     /**
      * 数据库查询排序
-     * @param allows 允许排序的字段数组
+     * @param array:allows 允许排序的字段数组
      * 自动读取请求数据中的参数
      * @param porder 排序字段
      * @param psort 排序方式
@@ -67,9 +67,10 @@ abstract class BaseModel extends Model
 
     /**
      * 获取格式化的列表数据
-     * @param searchableFields       可搜索的字段
-     * @param orderableFields        可排序字段
-     * @param views                  视图查询数据
+     * @param array:searchableFields       可搜索的字段 @see $this->initSearchableFieldsArray(...)
+     * @param array:orderableFields        可排序字段
+     * @param array:views                  视图查询数据
+     * @param string:groupby               分组数据
      */
     public function getStandardPagedArrayList($searchableFields=[], $orderableFields=[], $views=[], $groupby=null){
         // 先获取总共查询的数据
@@ -85,7 +86,7 @@ abstract class BaseModel extends Model
 
     /**
      * 初始化搜索字段
-     * @param searchableFields       可搜索的字段的集合, 例如[[[可搜索字段], '值前缀', '值后缀', '检索方式'], [第二节...], [第三节...]]
+     * @param array:searchableFields       可搜索的字段的集合, 例如[[[可搜索字段0, 可搜索字段1, ...], '值前缀', '值后缀', '检索方式: LIKE, =, ...', '直接进行匹配的值'], ...]
      */
     public function initSearchableFieldsArray($searchableFields){
         foreach($searchableFields as $fieldsArray){
@@ -102,7 +103,7 @@ abstract class BaseModel extends Model
 
     /**
      * 初始化连表数据
-     * @param views       视图查询数据, 至少两个参数. 例如: [['主表的别名', '主表检索的字段'], ['连接的表模型','检索的字段','条件sql', '连表方式, INNER、LEFT、RIGHT等']], 
+     * @param array:views       视图查询数据, 至少两个参数. 例如: [['主表的别名', '主表检索的字段'], ['连接的表模型','检索的字段','条件sql', '连表方式, INNER、LEFT、RIGHT等']], 
      *                    还有其余方式请参照https://www.kancloud.cn/manual/thinkphp5/156576 → 数据库 → 查询构造器 → 视图查询
      */
     public function initViews($views=[]){
@@ -120,9 +121,10 @@ abstract class BaseModel extends Model
 
     /**
      * 输入格式化的列表
-     * @param pageNum       页码
-     * @param pageSize      每页数量
-     * @param list          列表数据
+     * @param integer:pageNum       页码
+     * @param integer:pageSize      每页数量
+     * @param integer:total         总共条数
+     * @param array:list          列表数据
      * @return 格式化的列表
      */
     public static function getStandardArrayListStatically($pageNum=self::pageNum, $pageSize=self::pageSize, $total=0, $list=[]){
@@ -144,23 +146,12 @@ abstract class BaseModel extends Model
     }
 
     /**
-     * 限制字段长度
-     * @param names 操作的字段集合
-     * @param length 限制的长度
-     * @return $this
-     */
-    public function limitLength($names=['remark'], $length=200){
-        foreach($names as $key=>$name)
-            $this[$name] = is_null($this[$name]) ? $this[$name] : substr($this[$name], 0, $length);
-        return $this;
-    }
-
-    /**
      * 初始化可搜索字段
      * 自动判断字段是否为null, 不为null则添加where的like搜索
-     * @param searchableFields 设置判断的字段; key如果不为数字则作为搜索字段, value作为从$searchableFields读取值的key
-     * @param searchPrefix 搜索字段的值的前缀
-     * @param searchSuffix 搜索字段的值的后缀
+     * @param array:searchableFields 设置判断的字段; key如果不为数字则作为搜索字段, value作为从$searchableFields读取值的key
+     * @param string:searchPrefix 搜索字段的值的前缀
+     * @param string:searchSuffix 搜索字段的值的后缀
+     * @param string:defaultValue 默认检索的值
      * @return $this
      */
     public function initSearchableFields($searchableFields=[], $searchPrefix='%', $searchSuffix='%', $compareType='LIKE', $defaultValue=null){
@@ -173,6 +164,36 @@ abstract class BaseModel extends Model
             }
         }
         return $this;
+    }
+
+    /**
+     * 限制字段长度
+     * @param array:names 操作的字段集合
+     * @param integer:length 限制的长度
+     * @return $this
+     */
+    public function limitLength($names=['remark'], $length=200){
+        foreach($names as $key=>$name)
+            $this[$name] = is_null($this[$name]) ? $this[$name] : substr($this[$name], 0, $length);
+        return $this;
+    }
+
+    /**
+     * 限制字段值在提供的数组元素内
+     * @param array:fields 限制的字段
+     * @param array:values  限制的值
+     */
+    public function parseFieldsInArray($fields=['disabled'], $values=[0, 1]){
+        foreach($fields as $fk=>$field)
+            if(!in_array($this[$field], $values)) unset($this[$field]);
+        return $this;
+    }
+
+    /**
+     * 获取当前模型的数据库名称
+     */
+    public function getTable(){
+        return $this->table;
     }
 
     //自定义初始化

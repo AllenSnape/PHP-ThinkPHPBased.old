@@ -143,6 +143,7 @@ return [
     // 视图输出字符串内容替换
     'view_replace_str'       => [
         '__ROOT__'              =>              '',
+        '__NOPIC__'             =>              '/images/404.jpg',
         '__COPYRIGHT__'         =>              '版权、备案信息'
     ],
     // 默认跳转页面对应的模板文件

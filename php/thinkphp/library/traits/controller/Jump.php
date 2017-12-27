@@ -34,7 +34,7 @@ trait Jump
      * @param array     $header 发送的Header信息
      * @return void
      */
-    protected function success($msg = '', $url = null, $data = '', $wait = 3, array $header = [])
+    protected function success($msg = '', $url = null, $data = '', $wait = 3, array $header = [], $isAjax = false)
     {
         if (is_null($url) && !is_null(Request::instance()->server('HTTP_REFERER'))) {
             $url = Request::instance()->server('HTTP_REFERER');
@@ -47,6 +47,7 @@ trait Jump
             'data' => $data,
             'url'  => $url,
             'wait' => $wait,
+            'isAjax' => $isAjax
         ];
 
         $type = $this->getResponseType();
@@ -68,10 +69,10 @@ trait Jump
      * @param array     $header 发送的Header信息
      * @return void
      */
-    protected function error($msg = '', $url = null, $data = '', $wait = 3, array $header = [])
+    protected function error($msg = '', $url = null, $data = '', $wait = 3, array $header = [], $isAjax = false)
     {
         if (is_null($url)) {
-            $url = Request::instance()->isAjax() ? '' : 'javascript:history.back(-1);';
+            $url = Request::instance()->isAjax() || $isAjax ? '' : 'javascript:history.back(-1);';
         } elseif ('' !== $url) {
             $url = (strpos($url, '://') || 0 === strpos($url, '/')) ? $url : Url::build($url);
         }
@@ -81,6 +82,7 @@ trait Jump
             'data' => $data,
             'url'  => $url,
             'wait' => $wait,
+            'isAjax' => $isAjax
         ];
 
         $type = $this->getResponseType();

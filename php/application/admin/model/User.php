@@ -7,15 +7,14 @@ use app\admin\controller\AdminBaseController;
 
 use allensnape\utils\StringUtil;
 
-class User extends AdminBaseModel
-{
+class User extends AdminBaseModel{
 
     const PASSWORD_DEFAULT_ENCRYPT_ROUND = 2048;
     
     const PASSWORD_SALT_WORDS = 'userPasswordSalt';
 
     // 设置当前模型对应的完整数据表名称
-    protected $table = 'user';
+    protected $table = 'as_user';
 
     // 默认主键
     protected $pk = 'id';
@@ -25,16 +24,17 @@ class User extends AdminBaseModel
 
     protected static function init()
     {
-        User::beforeInsert(function ($user) {
-            User::filterFields($user);
+        self::beforeInsert(function ($model) {
+            self::filterFields($model);
         });
-        User::beforeUpdate(function ($user) {
-            User::filterFields($user);
+        self::beforeUpdate(function ($model) {
+            self::filterFields($model);
         });
     }
 
-    protected static function filterFields($user){
-        $user->limitLength()->limitLength(['name'], 16);
+    protected static function filterFields($model){
+        $model->limitLength()->limitLength(['name'], 16)
+        ->parseFieldsInArray();
     }
     
     /**

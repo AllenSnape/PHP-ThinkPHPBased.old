@@ -5,7 +5,9 @@ use app\admin\model\Menu as MenuModel;
 
 class Menu extends AdminBaseController{
 
-    // TODO: 取消分页, 在一页中展示所有菜单和操作
+    public function demo(){
+        return $this->json_success('哈哈', MenuModel::getFormattedMenus());
+    }
 
     /**
      * 菜单列表
@@ -13,8 +15,8 @@ class Menu extends AdminBaseController{
     public function listPage(){
         $model = new MenuModel($_POST);
         $this->assign('title', '菜单列表');
-        $this->assign('defaultParams', '?porder=create_time&psort=desc&disabled=0');
-        $this->assign('data', $model->getStandardPagedArrayList([[['name', 'permission']], [['disabled', 'hidden'], '', '', '=']], ['create_time', 'sort']));
+        $this->assign('defaultParams', '?');
+        $this->assign('data', ['rows'=>$model->where(['disabled'=>0])->order('`sort` ASC, create_time DESC')->select()]);
         return $this->fetch('menu/list');
     }
 

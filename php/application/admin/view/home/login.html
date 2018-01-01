@@ -30,6 +30,20 @@
         </div>
     </div>
     <script>
+        $(function(){
+            if(top !== window){
+                top.location.href = location.href;
+            }else{
+                $.ajax({
+                    url: '__ROOT__/index.php/admin/home/logined.html?ajax',
+                    noneCheck: function(data){
+                        if(data.result == 1) top.location.href = '__ROOT__/index.php/admin/home/homePage.html';
+                        return true;
+                    }
+                });
+            }
+    	});
+
         function login(){
             var loginform = $("#loginform");
             var username = loginform.find("input[name=username]").val();

@@ -1,11 +1,6 @@
 <?php
 namespace app\admin\controller;
 
-use think\View;
-use think\Session;
-
-use allensnape\utils\StringUtil;
-
 use app\admin\model\User as UserModel;
 use app\admin\model\UserLog as UserLogModel;
 
@@ -14,7 +9,7 @@ class User extends AdminBaseController{
     // 管理员管理页面跳转
     public function listPage(){
         $this->assign('title', '管理员列表');
-        $this->assign('defaultParams', '?porder=create_time&psort=desc&disabled=0');
+        $this->assign('defaultParams', '?porder=create_time&psort=desc');
         $this->assign('data', $this->userlist());
         $this->assign('user', UserModel::getCurrentUser());
         return $this->fetch('user/list');
@@ -38,7 +33,7 @@ class User extends AdminBaseController{
     // 管理员列表
     private function userlist(){
         $user = new UserModel();
-        return $user->getStandardPagedArrayList([[['mobile', 'name']]], ['create_time']);
+        return $user->getStandardPagedArrayList([[['mobile', 'name']], [['disabled'], '', '', '=']], ['create_time']);
     }
     
     // 添加管理员
@@ -102,7 +97,7 @@ class User extends AdminBaseController{
         
         if($old->allowField(true)->save($user->beforeEdit(), ['id'=>$user['id']]) == 1){
             // 踢出修改的管理员
-            $this->kickout($old['id']);
+            UserModel::kickout($old['id']);
             return $this->json_success('修改成功!');
         }
 
@@ -110,7 +105,7 @@ class User extends AdminBaseController{
     }
 
     // 操作管理员
-    public function ope($id=null, $disabled=null){
+    public function dis($id=null, $disabled=null){
         if(!$this->hasText($id)){
             return $this->json_error('请选择要操作的管理员!');
         }
@@ -128,35 +123,11 @@ class User extends AdminBaseController{
 
         if($old->allowField(true)->save($user->beforeEdit(), ['id'=>$id]) == 1){
             // 踢出被禁用的管理员
-            if($disabled == '1') $this->kickout($old['id']);
+            if($disabled == '1') UserModel::kickout($old['id']);
             return $this->json_success('修改成功!');
         }
 
         return $this->json_error('修改失败!');
-    }
-
-    // 踢出修改的管理员 - 删除对应的session文件
-    private function kickout($id=null){
-        $id = is_null($id) && 
-            isset($_SESSION['think'][AdminBaseController::USER_SESSION_CODE]) && 
-            isset($_SESSION['think'][AdminBaseController::USER_SESSION_CODE]['id']) ? 
-                $_SESSION['think'][AdminBaseController::USER_SESSION_CODE]['id'] : $id;
-        if(is_null($id)) return false;
-        foreach($this->getAllSessionIDs() as $index=>$sessionId){
-            session_id($sessionId);
-            if(!isset($_SESSION)){
-                session_start();
-            }
-            if(isset($_SESSION['think']) && isset($_SESSION['think'][AdminBaseController::USER_SESSION_CODE]) 
-                && isset($_SESSION['think'][AdminBaseController::USER_SESSION_CODE]['id'])){
-                if($id === $_SESSION['think'][AdminBaseController::USER_SESSION_CODE]['id']){
-                    @unlink (session_save_path().DS.'sess_'.$sessionId);
-                    session_abort();
-                    return true;
-                }
-            }
-            session_abort();
-        }
     }
 
 }

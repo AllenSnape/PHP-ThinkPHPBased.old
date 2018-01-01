@@ -6,6 +6,7 @@ use think\Session;
 use app\admin\controller\AdminBaseController;
 
 use allensnape\utils\StringUtil;
+use allensnape\controller\BaseController;
 
 class User extends AdminBaseModel{
 
@@ -60,6 +61,32 @@ class User extends AdminBaseModel{
      */
     public static function getSaltedPasswordStatically($password=null){
         return StringUtil::getSaltedPassword($password, self::PASSWORD_SALT_WORDS, self::PASSWORD_DEFAULT_ENCRYPT_ROUND);
+    }
+
+    // 踢出修改的管理员 - 删除对应的session文件
+    public static function kickout($id=null){
+        $thinkSessionFlag = config('session.prefix');
+        $id = is_null($id) && 
+            isset($_SESSION[$thinkSessionFlag]) &&
+            isset($_SESSION[$thinkSessionFlag][AdminBaseController::USER_SESSION_CODE]) && 
+            isset($_SESSION[$thinkSessionFlag][AdminBaseController::USER_SESSION_CODE]['id']) ? 
+                $_SESSION[$thinkSessionFlag][AdminBaseController::USER_SESSION_CODE]['id'] : $id;
+        if(is_null($id)) return false;
+        foreach(BaseController::getAllSessionIDs() as $index=>$sessionId){
+            session_id($sessionId);
+            if(!isset($_SESSION)){
+                session_start();
+            }
+            if(isset($_SESSION[$thinkSessionFlag]) && isset($_SESSION[$thinkSessionFlag][AdminBaseController::USER_SESSION_CODE]) 
+                && isset($_SESSION[$thinkSessionFlag][AdminBaseController::USER_SESSION_CODE]['id'])){
+                if($id === $_SESSION[$thinkSessionFlag][AdminBaseController::USER_SESSION_CODE]['id']){
+                    session_abort();
+                    @unlink(session_save_path().DS.'sess_'.$sessionId);
+                    return true;
+                }
+            }
+            session_abort();
+        }
     }
 
 }

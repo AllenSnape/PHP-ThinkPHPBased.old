@@ -25,6 +25,7 @@
         <table class="table table-hover col-md-12">
             <thead>
                 <tr>
+                    <th></th>
                     <th>名称</th>
                     <th>图标</th>
                     <th>标识符</th>
@@ -36,33 +37,118 @@
             </thead>
             <tbody>
                 {:is_null($data.rows) || count($data.rows) == 0 ? '<tr><td colspan="7" class="no-data">暂无数据</td></tr>' : ''}
-                {volist name="data.rows" id="row"}
-                    <tr>
-                        <td style="display:none;" id="tablerow_{$row.id}">
-                            {$row|json_encode}
-                        </td>
-                        <td><a href="{$row.href}">{$row.name}</a></td>
-                        <!-- <td><img class="img-50x50" src="{$row.icon??'__ROOT____NOPIC__'}" alt="{$row.name}" title="{$row.name}"/></td> -->
-                        <td><i class="{$row.icon}" aria-hidden="true"></i></td>
-                        <td>{$row.permission}</td>
-                        <td>{$row.sort}</td>
-                        <td class="text-overflow-ellipsis" style="max-width:120px;" title="{$row.remark}">{$row.remark}</td>
-                        <td class="fromUnixtimestamp">{$row.create_time}</td>
-                        <td>
-                            <button class="btn btn-primary btn-sm" onclick="additbox.edit('修改 - {$row.title}', $('#tablerow_{$row.id}').html());">修改</button>
-                            <button class="btn btn-danger btn-sm" onclick="dis('{$row.id}', 1);">删除</button>
-                        </td>
-                    </tr>
-                {/volist}
+                {php}
+                    function loopNbsp($count=0){
+                        $result = '';
+                        for($i = 0; $i < $count; $i++) $result .= '&nbsp;';
+                        return $result;
+                    }
+
+                    function subMenuOutput($menus=[], $level=0){
+                        foreach($menus as $k=>$row){
+                            echo '<tr '.($level > 0 ? 'style="display: none;"' : '').' pid="'.$row['pid'].'">';
+                            echo '    <td style="display:none;" id="tablerow_'.$row['id'].'">';
+                            echo          json_encode($row);
+                            echo '    </td>';
+                            echo '    <td style="cursor: pointer; width: 200px; max-width: 200px; text-align: left; padding-left: 20px; user-select: none;" onclick="opeSubMenu($(this));" class="subhidden" mid="'.$row['id'].'">';
+                            echo          loopNbsp($level*3);
+                            echo '        <i class="fa fa-chevron-down" aria-hidden="true" style="display: none;"></i>';
+                            echo '        <i class="fa fa-chevron-right" aria-hidden="true"></i>';
+                            echo '    </td>';
+                            echo '    <td><a href="'.$row['href'].'">'.$row['name'].'</a></td>';
+                            echo '    <td><i class="'.$row['icon'].'" aria-hidden="true"></i></td>';
+                            echo '    <td>'.$row['permission'].'</td>';
+                            echo '    <td>'.$row['sort'].'</td>';
+                            echo '    <td class="text-overflow-ellipsis" style="max-width:120px;" title="'.$row['remark'].'">'.$row['remark'].'</td>';
+                            echo '    <td class="fromUnixtimestamp">'.$row['create_time'].'</td>';
+                            echo '    <td>';
+                            echo '        <button class="btn btn-primary btn-sm" onclick="additbox.edit(\'修改 - '.$row['name'].'\', $(\'#tablerow_'.$row['id'].'\').html());">修改</button>';
+                            echo '        <button class="btn btn-danger btn-sm" onclick="dis(\''.$row['id'].'\', 1);">删除</button>';
+                            echo '    </td>';
+                            echo '</tr>';
+
+                            if(isset($row['subMenus']) && is_array($row['subMenus'])){
+                                subMenuOutput($row['subMenus'], $level+1);
+                            }
+                        }
+                    }
+                    subMenuOutput($data['rows'], 0);
+                {/php}
             </tbody>
         </table>
+        <script>
+            function opeSubMenu(obj){
+                if(obj.hasClass('subhidden')){
+                    obj.removeClass('subhidden');
+                    obj.children('.fa-chevron-down').show();
+                    obj.children('.fa-chevron-right').hide();
+
+                    $('tr[pid='+obj.attr('mid')+']').show();
+                }else{
+                    obj.addClass('subhidden');
+                    obj.children('.fa-chevron-down').hide();
+                    obj.children('.fa-chevron-right').show();
+
+                    $('tr[pid='+obj.attr('mid')+']').hide();
+                }
+                obj.parent().show();
+            }
+        </script>
     </div>
 
     <table id="additbox" class="additbox">
         <tbody>
             <tr>
                 <td class="">父菜单</td>
-                <td><input type="text" class="form-control" name="pid" placeholder="" /></td>
+                <td>
+                    <input type="hidden" name="pid">
+                    <div class="typeahead__container">
+                        <div class="typeahead__field">
+                            <span class="typeahead__query">
+                                <input class="form-control js-typeahead" name="pmenuName" type="search" autocomplete="off" placeholder="搜索父菜单名称">
+                            </span>
+                        </div>
+                    </div>
+                    <!-- 初始化商家异步选择器 -->
+                    <script>
+                        // 初始化商家异步选择器
+                        $(function(){
+                            initTypeahead(
+                                // 搜索框
+                                $("#additbox").find("input[name=pmenuName]"),
+                                // 搜索结果模板
+                                function (query, item){
+                                    return "{{name}}: {{href}}";
+                                },
+                                // 空数据时显示的内容
+                                "没有搜索到关于{{query}}的商家",
+                                // 搜索配置
+                                {
+                                    rows: {
+                                        display: ["name"],
+                                        ajax: function(query){
+                                            return {
+                                                url: "listJson.html?ajax",
+                                                path: "data.rows",
+                                                data:{
+                                                    name: query,
+                                                    disabled: 0,
+                                                    pageNum: 1,
+                                                    pageSize: 100
+                                                }
+                                            };
+                                        }
+                                    }
+                                },
+                                // 搜索结果回调
+                                function(node, data, query){
+                                    $(node).val(data.name);
+                                    $("#additbox").find("input[name=pid]").val(data.id);
+                                }
+                            );
+                        });
+                    </script>
+                </td>
             </tr>
             <tr>
                 <td class="rqd">名称</td>

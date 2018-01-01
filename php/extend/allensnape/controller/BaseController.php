@@ -97,24 +97,6 @@ class BaseController extends Controller
         return empty($browser) ? false : (is_null($glue) ? $browser : implode($glue, $browser));
     }
 
-    // 获取所有sessionId
-    public function getAllSessionIDs(){
-        $allSessionIDs = [];
-        $sessionNames = scandir(session_save_path());
-        
-        foreach($sessionNames as $sessionName) {
-            $sessionName = str_replace("sess_","",$sessionName);
-            if(strpos($sessionName,".") === false) { //This skips temp files that aren't sessions
-                array_push($allSessionIDs, $sessionName);
-                /*session_id($sessionName);
-                session_start();
-                $allSessions[$sessionName] = $_SESSION;
-                session_abort();*/
-            }
-        }
-        return $allSessionIDs;
-    }
-
     public function isEmpty($str){
         return StringUtil::isEmpty($str);
     }
@@ -171,6 +153,24 @@ class BaseController extends Controller
         }
         imagepng($im);//输出图片
         imagedestroy($im);//释放图片所占内存
+    }
+
+    // 获取所有sessionId
+    public static function getAllSessionIDs(){
+        $allSessionIDs = [];
+        $sessionNames = scandir(session_save_path());
+        
+        foreach($sessionNames as $sessionName) {
+            $sessionName = str_replace("sess_","",$sessionName);
+            if(strpos($sessionName,".") === false) { //This skips temp files that aren't sessions
+                array_push($allSessionIDs, $sessionName);
+                /*session_id($sessionName);
+                session_start();
+                $allSessions[$sessionName] = $_SESSION;
+                session_abort();*/
+            }
+        }
+        return $allSessionIDs;
     }
 
 }

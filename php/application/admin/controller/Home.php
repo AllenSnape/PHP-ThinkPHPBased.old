@@ -11,8 +11,7 @@ class Home extends AdminBaseController{
     /**
      * 检查是否登录并返回管理员信息
      */
-    public function logined()
-    {
+    public function logined(){
         $user = Session::get(parent::USER_SESSION_CODE);
         return $this->json_success(
             $user['name'].' logined.', 
@@ -23,8 +22,7 @@ class Home extends AdminBaseController{
     /**
      * 登出
      */
-    public function logout()
-    {
+    public function logout(){
         $user = Session::pull(parent::USER_SESSION_CODE);
         return $this->json_success('Goodbye '.$user['name']);
     }

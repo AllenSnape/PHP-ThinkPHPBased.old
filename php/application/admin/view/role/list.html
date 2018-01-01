@@ -43,7 +43,8 @@
                         <td class="fromUnixtimestamp">{$row.create_time}</td>
                         <td>
                             <button class="btn btn-primary btn-sm" onclick="additbox.edit('修改 - {$row.title}', $('#tablerow_{$row.id}').html());">修改</button>
-                            <button class="btn btn-danger btn-sm" onclick="dis('{$row.id}', 1);">删除</button>
+                            <button class="btn btn-primary btn-sm" onclick="">菜单设置</button>
+                            <button class="btn btn-{$row.disabled == 0 ? 'danger' : 'success'} btn-sm" onclick="dis('{$row.id}', {$row.disabled == 0 ? 1 : 0});">{$row.disabled == 0 ? '禁用' : '启用'}</button>
                         </td>
                     </tr>
                 {/volist}
@@ -83,7 +84,7 @@
         });
 
         function dis(id, disabled){
-            layer.confirm('确定删除?', {btn: ['确认', '取消']}, function(){
+            layer.confirm('确定'+(disabled == 0 ? '启用' : '禁用')+'?', {btn: ['确认', '取消'], title: '确定?'}, function(){
                 $.ajax({
                     url: 'dis.html?ajax',
                     data: {

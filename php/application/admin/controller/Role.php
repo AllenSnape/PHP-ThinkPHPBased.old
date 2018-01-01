@@ -11,7 +11,7 @@ class Role extends AdminBaseController{
     public function listPage(){
         $model = new RoleModel($_POST);
         $this->assign('title', '角色列表');
-        $this->assign('defaultParams', '?porder=create_time&psort=desc&disabled=0');
+        $this->assign('defaultParams', '?porder=create_time&psort=desc');
         $this->assign('data', $model->getStandardPagedArrayList([[['name']], [['disabled'], '', '', '=']], ['create_time']));
         return $this->fetch('role/list');
     }

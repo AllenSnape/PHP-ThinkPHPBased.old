@@ -43,7 +43,7 @@
                         <td class="fromUnixtimestamp">{$row.create_time}</td>
                         <td>
                             <button class="btn btn-primary btn-sm" onclick="additbox.edit('修改 - {$row.title}', $('#tablerow_{$row.id}').html());">修改</button>
-                            <button class="btn btn-primary btn-sm" onclick="">菜单设置</button>
+                            <button class="btn btn-primary btn-sm" onclick="showMenuSelector('{$row.id}');">菜单设置</button>
                             <button class="btn btn-{$row.disabled == 0 ? 'danger' : 'success'} btn-sm" onclick="dis('{$row.id}', {$row.disabled == 0 ? 1 : 0});">{$row.disabled == 0 ? '禁用' : '启用'}</button>
                         </td>
                     </tr>
@@ -51,8 +51,145 @@
             </tbody>
         </table>
     </div>
+    <script>
+        // 显示菜单选择器
+        function showMenuSelector(roleid){
+            $.ajax({
+                url: 'roleMenuListJson.html?ajax',
+                data: {
+                    roleid: roleid
+                },
+                succeeded: function(data){
+                    $('#menusSelector').find('input[type=checkbox]').each(function(index, item){
+                        item.checked = false;
+                    });
+                    for(var i in data.data){
+                        $('#menusSelector').find('#menu_id_'+data.data[i]['menu_id']).get(0).checked = true;
+                    }
+                    var menuSelectorLayerNo = layer.open({
+                        type: 1,
+                        title: '设置角色可访问菜单',
+                        area: ['300px', '500px'],
+                        content: $('#menusSelector'),
+                        success: function(layero, index){
+                            $('#menusSelector').show();
+                            // 成功打开之后, 打开第一级的菜单
+                            $('#menusSelector').children('div').children('p').children('.subhidden').trigger('click');
+                        },
+                        end: function(){
+                            $('#menusSelector').hide();
+                        },
+                        btn: ['确定', '取消'],
+                        yes: function(index, layero){
+                            // 获取所有菜单
+                            var checkedMenus = [];
+                            $('#menusSelector').find('input[type=checkbox]:checked').each(function(index, item){
+                                checkedMenus.push(item.name);
+                            });
+                            $.ajax({
+                                url: 'setRoleMenus.html?ajax',
+                                data: {
+                                    roleid: roleid,
+                                    menuids: JSON.stringify(checkedMenus)
+                                },
+                                succeeded: function(data){
+                                    layer.close(index);
+                                    layer.alert(data.message, {icon: 1});
+                                }
+                            });
+                        },
+                        btn2: function(index, layero){
+                            layer.close(index);
+                        }
+                    });
+                }
+            });
+        }
+    </script>
 
     {include file="public/pagination" /}
+
+    <!-- 菜单选择器 -->
+    <div class="row">
+        <style>
+            #menusSelector{
+                user-select: none;
+                display: none;
+                padding: 20px 10px;
+            }
+            #menusSelector .fa{
+                cursor: pointer;
+            }
+            #menusSelector .checkbox-label > .fa{
+                display: none;
+            }
+            #menusSelector input[type=checkbox]:checked +.checkbox-label > .fa-check-square-o{
+                display: block;
+            }
+            #menusSelector input[type=checkbox]:not(:checked) +.checkbox-label > .fa-square-o{
+                display: block;
+            }
+        </style>
+        <div class="col-md-12" id="menusSelector">
+            {php}
+                function loopNbsp($count=0){
+                    $result = '';
+                    for($i = 0; $i < $count; $i++) $result .= '&nbsp;';
+                    return $result;
+                }
+    
+                function subMenuOutput($menus=[], $level=0, $pid=''){
+                    echo '<div pid="menu_id_'.$pid.'" style="'.($level > 0 ? 'display: none;' : '').'">';
+                    foreach($menus as $k=>$row){
+                        echo '    <p>';
+                        echo '        <span class="subhidden" onclick="opeSubMenus($(this));" mid="menu_id_'.$row['id'].'" style="width: 50px; display: inline-block;">';
+                        echo              loopNbsp($level*3);
+                        echo '            <i class="fa fa-chevron-down" aria-hidden="true" style="display: none;"></i>';
+                        echo '            <i class="fa fa-chevron-right" aria-hidden="true"></i>';
+                        echo '        </span>';
+                        echo '        <input type="checkbox" name="'.$row['id'].'" id="menu_id_'.$row['id'].'" style="display: none;" checked onchange="checkSubMenus($(this).attr(\'id\'), this.checked);" />';
+                        echo '        <label for="menu_id_'.$row['id'].'" class="checkbox-label" style="width: 20px; display: inline-block;">';
+                        echo '            <i class="fa fa-square-o" aria-hidden="true"></i>';
+                        echo '            <i class="fa fa-square" aria-hidden="true"></i>';
+                        echo '            <i class="fa fa-check-square-o" aria-hidden="true"></i>';
+                        echo '        </label>';
+                        echo '        <span style="margin-left: 20px;">'.$row['name'].'</span>';
+                        echo '    </p>';
+    
+                        if(isset($row['subMenus']) && is_array($row['subMenus'])){
+                            subMenuOutput($row['subMenus'], $level+1, $row['id']);
+                        }
+                    }
+                    echo '</div>';
+                }
+                subMenuOutput($menus, 0);
+            {/php}
+        </div>
+        <script>
+            function opeSubMenus(obj){
+                if(obj.hasClass('subhidden')){
+                    obj.removeClass('subhidden');
+                    obj.children('.fa-chevron-down').show();
+                    obj.children('.fa-chevron-right').hide();
+    
+                    $('#menusSelector div[pid='+obj.attr('mid')+']').slideDown();
+                }else{
+                    obj.addClass('subhidden');
+                    obj.children('.fa-chevron-down').hide();
+                    obj.children('.fa-chevron-right').show();
+    
+                    $('#menusSelector div[pid='+obj.attr('mid')+']').slideUp();
+                }
+                obj.parent().show();
+            }
+
+            function checkSubMenus(id, checked){
+                $('div[pid='+id+']').find('input[type=checkbox]').each(function(index, item){
+                    item.checked = checked;
+                });
+            }
+        </script>
+    </div>
 
     <table id="additbox" class="additbox">
         <tbody>

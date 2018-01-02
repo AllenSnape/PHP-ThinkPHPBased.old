@@ -55,6 +55,7 @@
                         <td class="fromUnixtimestamp">{$row.create_time}</td>
                         <td>
                             <button class="btn btn-primary btn-sm" onclick="additbox.edit('修改 - {$row.title}', $('#tablerow_{$row.id}').html());">修改</button>
+                            <button class="btn btn-primary btn-sm" onclick="">角色设置</button>
                             <button class="btn btn-{$row.disabled == 0 ? 'danger' : 'success'} btn-sm" onclick="dis('{$row.id}', {$row.disabled == 0 ? 1 : 0});">{$row.disabled == 0 ? '禁用' : '启用'}</button>
                         </td>
                     </tr>

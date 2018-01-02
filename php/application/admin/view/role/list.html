@@ -69,7 +69,7 @@
                     var menuSelectorLayerNo = layer.open({
                         type: 1,
                         title: '设置角色可访问菜单',
-                        area: ['300px', '500px'],
+                        area: ['400px', '500px'],
                         content: $('#menusSelector'),
                         success: function(layero, index){
                             $('#menusSelector').show();
@@ -93,8 +93,7 @@
                                     menuids: JSON.stringify(checkedMenus)
                                 },
                                 succeeded: function(data){
-                                    layer.close(index);
-                                    layer.alert(data.message, {icon: 1});
+                                    location.reload();
                                 }
                             });
                         },
@@ -120,40 +119,24 @@
             #menusSelector .fa{
                 cursor: pointer;
             }
-            #menusSelector .checkbox-label > .fa{
-                display: none;
-            }
-            #menusSelector input[type=checkbox]:checked +.checkbox-label > .fa-check-square-o{
-                display: block;
-            }
-            #menusSelector input[type=checkbox]:not(:checked) +.checkbox-label > .fa-square-o{
-                display: block;
-            }
         </style>
         <div class="col-md-12" id="menusSelector">
             {php}
-                function loopNbsp($count=0){
-                    $result = '';
-                    for($i = 0; $i < $count; $i++) $result .= '&nbsp;';
-                    return $result;
-                }
-    
                 function subMenuOutput($menus=[], $level=0, $pid=''){
                     echo '<div pid="menu_id_'.$pid.'" style="'.($level > 0 ? 'display: none;' : '').'">';
                     foreach($menus as $k=>$row){
                         echo '    <p>';
-                        echo '        <span class="subhidden" onclick="opeSubMenus($(this));" mid="menu_id_'.$row['id'].'" style="width: 50px; display: inline-block;">';
-                        echo              loopNbsp($level*3);
+                        echo '        <span class="subhidden" onclick="opeSubMenus($(this));" mid="menu_id_'.$row['id'].'" style="width: 20px; margin-left: '.($level*14).'px; display: inline-block;">';
                         echo '            <i class="fa fa-chevron-down" aria-hidden="true" style="display: none;"></i>';
                         echo '            <i class="fa fa-chevron-right" aria-hidden="true"></i>';
                         echo '        </span>';
-                        echo '        <input type="checkbox" name="'.$row['id'].'" id="menu_id_'.$row['id'].'" style="display: none;" checked onchange="checkSubMenus($(this).attr(\'id\'), this.checked);" />';
-                        echo '        <label for="menu_id_'.$row['id'].'" class="checkbox-label" style="width: 20px; display: inline-block;">';
+                        echo '        <input class="checkbox" type="checkbox" name="'.$row['id'].'" id="menu_id_'.$row['id'].'" checked onchange="checkSubMenus($(this).attr(\'id\'), this.checked);" />';
+                        echo '        <label for="menu_id_'.$row['id'].'" class="checkbox-label" style="width: calc(100% - 70px);display: inline-block;">';
                         echo '            <i class="fa fa-square-o" aria-hidden="true"></i>';
                         echo '            <i class="fa fa-square" aria-hidden="true"></i>';
                         echo '            <i class="fa fa-check-square-o" aria-hidden="true"></i>';
+                        echo '            <span style="margin-left: 20px;">'.$row['name'].'</span>';
                         echo '        </label>';
-                        echo '        <span style="margin-left: 20px;">'.$row['name'].'</span>';
                         echo '    </p>';
     
                         if(isset($row['subMenus']) && is_array($row['subMenus'])){
@@ -194,7 +177,7 @@
     <table id="additbox" class="additbox">
         <tbody>
             <tr>
-                <td class="rqd">姓名</td>
+                <td class="rqd">名称</td>
                 <td><input type="text" class="form-control" name="name" placeholder="" /></td>
             </tr>
             <tr>

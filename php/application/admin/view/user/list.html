@@ -55,7 +55,7 @@
                         <td class="fromUnixtimestamp">{$row.create_time}</td>
                         <td>
                             <button class="btn btn-primary btn-sm" onclick="additbox.edit('修改 - {$row.title}', $('#tablerow_{$row.id}').html());">修改</button>
-                            <button class="btn btn-primary btn-sm" onclick="">角色设置</button>
+                            <button class="btn btn-primary btn-sm" onclick="loadUserRolesSelector('{$row.id}');">角色设置</button>
                             <button class="btn btn-{$row.disabled == 0 ? 'danger' : 'success'} btn-sm" onclick="dis('{$row.id}', {$row.disabled == 0 ? 1 : 0});">{$row.disabled == 0 ? '禁用' : '启用'}</button>
                         </td>
                     </tr>
@@ -65,6 +65,71 @@
     </div>
 
     {include file="public/pagination" /}
+
+    <div class="row" id="userRolesSelector" style="display: none; margin: 0px; padding: 20px 0px;">
+        {volist name="roles" id="role"}
+            <div class="col-md-4">
+                <input class="checkbox" type="checkbox" name="{$role.id}" id="role_id_{$role.id}" />  
+                <label class="checkbox-label" for="role_id_{$role.id}">
+                    <i class="fa fa-square-o" aria-hidden="true"></i>
+                    <i class="fa fa-square" aria-hidden="true"></i>
+                    <i class="fa fa-check-square-o" aria-hidden="true"></i>
+                    <span>{$role.name}</span>
+                </label>
+            </div>
+        {/volist}
+    </div>
+    <script>
+        // 加载用户角色选择框
+        function loadUserRolesSelector(userid){
+            $.ajax({
+                url: 'userRoleListJson.html?ajax',
+                data: {userid: userid},
+                succeeded: function(data){
+                    $("#userRolesSelector").find('input[type=checkbox]').each(function(index, item){
+                        item.checked = false;
+                    });
+                    for(var i in data.data){
+                        $("#userRolesSelector").find('#role_id_'+data.data[i]['role_id']).get(0).checked = true;
+                    }
+
+                    var userRolesSelectorLayerIndex = layer.open({
+                        type: 1,
+                        title: '设置管理员角色',
+                        area: ['500px', '300px'],
+                        content: $('#userRolesSelector'),
+                        success: function(layero, index){
+                            $('#userRolesSelector').show();
+                        },
+                        end: function(){
+                            $('#userRolesSelector').hide();
+                        },
+                        btn: ['确定', '取消'],
+                        yes: function(index, layero){
+                            // 获取所有菜单
+                            var checkedRoles = [];
+                            $('#userRolesSelector').find('input[type=checkbox]:checked').each(function(index, item){
+                                checkedRoles.push(item.name);
+                            });
+                            $.ajax({
+                                url: 'setUserRoles.html?ajax',
+                                data: {
+                                    userid: userid,
+                                    roleids: JSON.stringify(checkedRoles)
+                                },
+                                succeeded: function(data){
+                                    location.reload();
+                                }
+                            });
+                        },
+                        btn2: function(index, layero){
+                            layer.close(index);
+                        }
+                    });
+                }
+            });
+        }
+    </script>
 
     <table id="additbox" class="additbox">
         <tbody>

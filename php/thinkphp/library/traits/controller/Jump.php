@@ -54,6 +54,9 @@ trait Jump
         if ('html' == strtolower($type)) {
             $result = ViewTemplate::instance(Config::get('template'), Config::get('view_replace_str'))
                 ->fetch(Config::get('dispatch_success_tmpl'), $result);
+        }else if('json' == strtolower($type)){
+            $response = Response::create(json_decode($msg, true), $type)->header($header);
+            throw new HttpResponseException($response);
         }
         $response = Response::create($result, $type)->header($header);
         throw new HttpResponseException($response);
@@ -89,6 +92,9 @@ trait Jump
         if ('html' == strtolower($type)) {
             $result = ViewTemplate::instance(Config::get('template'), Config::get('view_replace_str'))
                 ->fetch(Config::get('dispatch_error_tmpl'), $result);
+        }else if('json' == strtolower($type)){
+            $response = Response::create(json_decode($msg, true), $type)->header($header);
+            throw new HttpResponseException($response);
         }
         $response = Response::create($result, $type)->header($header);
         throw new HttpResponseException($response);

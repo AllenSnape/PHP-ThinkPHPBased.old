@@ -3,8 +3,8 @@ namespace app\admin\controller;
 
 use think\Session;
 
-use app\admin\model\Demo;
 use app\admin\model\User;
+use app\admin\model\Menu;
 
 class Home extends AdminBaseController{
 
@@ -74,6 +74,7 @@ class Home extends AdminBaseController{
      */
     public function homePage(){
         $this->assign('title', '管理系统');
+        $this->assign('menus', Menu::getCacheMenus());
         return $this->fetch('home/home');
     }
 

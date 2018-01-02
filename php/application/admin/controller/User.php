@@ -1,8 +1,12 @@
 <?php
 namespace app\admin\controller;
 
+use think\Db;
+
 use app\admin\model\User as UserModel;
+use app\admin\model\Role as RoleModel;
 use app\admin\model\UserLog as UserLogModel;
+use app\admin\model\UserRole as UserRoleModel;
 
 class User extends AdminBaseController{
 
@@ -12,6 +16,7 @@ class User extends AdminBaseController{
         $this->assign('defaultParams', '?porder=create_time&psort=desc');
         $this->assign('data', $this->userlist());
         $this->assign('user', UserModel::getCurrentUser());
+        $this->assign('roles', RoleModel::where(['disabled'=>0])->select());
         return $this->fetch('user/list');
     }
 
@@ -128,6 +133,68 @@ class User extends AdminBaseController{
         }
 
         return $this->json_error('修改失败!');
+    }
+
+    /**
+     * 查询对应管理员的角色授权列表
+     */
+    public function userRoleListJson($userid=null){
+        // 检查参数
+        if(!$this->hasText($userid)){
+            return $this->json_error('请选择要查看的管理员!');
+        }
+
+        // 检查查看的管理员是否存在
+        $user = UserModel::get($userid);
+        if(is_null($user)){
+            return $this->json_error('查看的管理员不存在!');
+        }
+
+        return $this->json_success('获取成功!', UserRoleModel::where(['user_id'=>$userid])->select());
+    }
+
+    /**
+     * 设置管理员角色
+     */
+    public function setUserRoles($userid=null, $roleids=null){
+        // 检查参数
+        if(!$this->hasText($userid)){
+            return $this->json_error('管理员id参数不存在!');
+        }
+
+        // 检查角色id的json集合
+        $roleids = json_decode($roleids, true);
+        if(is_null($roleids)){
+            return $this->json_error('角色id集合参数错误!');
+        }
+
+        // 检查操作的管理员是否存在
+        $user = UserModel::get($userid);
+        if(is_null($user)){
+            return $this->json_error('操作的管理员不存在!');
+        }
+
+        // 添加之前先删除所有关联
+        UserRoleModel::where(['user_id'=>$userid])->delete(true);
+
+        // 过滤掉不存在的角色id
+        $roles = RoleModel::where('id', 'in', $roleids)->select();
+
+        if(count($roles) > 0){
+            // 拼接批量添加sql
+            $sql = 'INSERT INTO '.UserRoleModel::TABLE_NAME.'(`user_id`, `role_id`) VALUES ';
+            $sqlValues = [];
+            // 循环拼接
+            foreach($roles as $rk=>$role){
+                $sql .= '(?, ?),';
+                array_push($sqlValues, $user['id']);
+                array_push($sqlValues, $role['id']);
+            }
+            $sql = substr($sql, 0, strlen($sql)-1);
+            return Db::execute($sql, $sqlValues) && UserModel::kickout($user['id']) ? $this->json_success('操作成功!') : $this->json_error('操作失败!');
+        }
+
+        return $this->json_success('操作成功!');
     }
 
 }

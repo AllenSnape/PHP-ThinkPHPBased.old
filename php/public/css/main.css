@@ -50,6 +50,28 @@ body{
     vertical-align: middle;
     color: red;
 }
+.checkbox-label{
+    cursor: pointer;
+    display: inline-block;
+    width: 100%;
+    user-select: none;
+}
+.checkbox-label > span{
+    display: inline-block;
+}
+.checkbox-label > .fa{
+    display: none;
+    width: 20px;
+}
+input.checkbox[type=checkbox]{
+    display: none;
+}
+input.checkbox[type=checkbox]:checked +.checkbox-label > .fa-check-square-o{
+    display: inline-block;
+}
+input.checkbox[type=checkbox]:not(:checked) +.checkbox-label > .fa-square-o{
+    display: inline-block;
+}
 
 /* 页头按钮样式 */
 .buttons{
@@ -139,7 +161,7 @@ body{
         box-shadow: none;
         height: 0;
     }
-    #menu .navbar-nav li.active .dropdown-menu{
+    #menu .navbar-nav li.active > .dropdown-menu{
         height: auto;
     }
     #menu li.active.keepopen-on-active > .dropdown-menu{
@@ -198,7 +220,7 @@ body{
         box-shadow: none;
         height: 0;
     }
-    #menu .navbar-nav li.active .dropdown-menu{
+    #menu .navbar-nav li.active > .dropdown-menu{
         height: auto;
     }
     #menu .dropdown-menu > .active > a{

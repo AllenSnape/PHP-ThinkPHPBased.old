@@ -14,7 +14,10 @@ $.ajaxSetup({
             if(data && data.result === 1){
                 this.succeeded(data);
             }else{
-                if(!this.failed(data)) layer.alert(data.message, {icon: 5});
+                if(!this.failed(data)){
+                    if(data.result == -1) layer.alert(data.message, {icon: 5});
+                    else if(data.result == 401) layer.alert(data.message, {icon: 5, yes: function(index, layero){top.location.reload();}});
+                }
             }
         }
     },

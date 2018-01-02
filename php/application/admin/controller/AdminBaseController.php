@@ -23,7 +23,7 @@ class AdminBaseController extends BaseController{
                 if(is_null($user)){
                     if($request->isAjax() || isset($request->param()['ajax']))
                     {
-                        $this->error($this->json_error('请先登录!')->getContent(), null, '', 3, ['content-type'=>'application/json; charset=utf-8'], true);
+                        $this->error($this->json_normal(401, '请先登录!')->getContent(), null, '', 3, ['content-type'=>'application/json; charset=utf-8'], true);
                     }
                     else
                     {

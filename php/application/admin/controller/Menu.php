@@ -37,7 +37,7 @@ class Menu extends AdminBaseController{
         // 如果父菜单id存在, 则检查是否存在
         if($this->hasText($model['pid'])){
             $pmenu = MenuModel::get($model['pid']);
-            if(!is_null($pmenu)){
+            if(is_null($pmenu)){
                 return $this->json_error('选择的父菜单不存在!');
             }
         }
@@ -64,7 +64,7 @@ class Menu extends AdminBaseController{
         // 如果父菜单id存在, 则检查是否存在
         if($this->hasText($model['pid'])){
             $pmenu = MenuModel::get($model['pid']);
-            if(!is_null($pmenu)){
+            if(is_null($pmenu)){
                 return $this->json_error('选择的父菜单不存在!');
             }
         }

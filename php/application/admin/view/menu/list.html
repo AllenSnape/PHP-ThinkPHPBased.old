@@ -8,74 +8,73 @@
     </ol>
     <!-- 按钮 -->
     <div class="row buttons">
-        <div class="col-md-2">
-            <input class="form-control" type="text" placeholder="搜索名称" id="searchFieldName" value="{$Request.param.name}">
-        </div>
         <div class="col-md-2" align="left">
-            <button class="btn btn-success" onclick="location.href = '{$defaultParams??'?'}&mobile='+$('#searchFieldMobile').val()+'&name='+$('#searchFieldName').val()+'';">搜索</button>
             <button class="btn btn-default" onclick="reload();">刷新</button>
         </div>
-        <div class="col-md-8" align="right">
+        <div class="col-md-10" align="right">
             <button class="btn btn-default" onclick="additbox.add();">添加菜单</button>
         </div>
     </div>
 
     <!-- 列表 -->
-    <div class="row">
-        <table class="table table-hover col-md-12">
-            <thead>
-                <tr>
-                    <th></th>
-                    <th>名称</th>
-                    <th>图标</th>
-                    <th>标识符</th>
-                    <th>序号</th>
-                    <th>备注</th>
-                    <th>创建时间</th>
-                    <th>操作</th>
-                </tr>
-            </thead>
-            <tbody>
-                {:is_null($data.rows) || count($data.rows) == 0 ? '<tr><td colspan="7" class="no-data">暂无数据</td></tr>' : ''}
-                {php}
-                    function loopNbsp($count=0){
-                        $result = '';
-                        for($i = 0; $i < $count; $i++) $result .= '&nbsp;';
-                        return $result;
-                    }
+    <style>
+        #menuList .col-md-12{
+            padding: 8px 0px;
+            line-height: 34px;
+        }
+        #menuList .col-md-12:hover{
+            background-color: rgba(0,0,0,0.05);
+        }
+    </style>
+    <div class="row" id="menuList">
+        <div class="col-md-12">
+            <div class="col-md-1"></div>
+            <div class="col-md-3">名称</div>
+            <div class="col-md-2">标识符</div>
+            <div class="col-md-1">序号</div>
+            <div class="col-md-1">可见</div>
+            <div class="col-md-2">创建时间</div>
+            <div class="col-md-2">操作</div>
+        </div>
+        {:is_null($data.rows) || count($data.rows) == 0 ? '<div class="col-md-12" style="font-size: 15px; text-align: center; cursor: default;">暂无数据</div>' : ''}
+        {php}
+            function loopNbsp($count=0){
+                $result = '';
+                for($i = 0; $i < $count; $i++) $result .= '&nbsp;';
+                return $result;
+            }
 
-                    function subMenuOutput($menus=[], $level=0){
-                        foreach($menus as $k=>$row){
-                            echo '<tr '.($level > 0 ? 'style="display: none;"' : '').' pid="'.$row['pid'].'">';
-                            echo '    <td style="display:none;" id="tablerow_'.$row['id'].'">';
-                            echo          json_encode($row);
-                            echo '    </td>';
-                            echo '    <td style="cursor: pointer; width: 200px; max-width: 200px; text-align: left; padding-left: 20px; user-select: none;" onclick="opeSubMenu($(this));" class="subhidden" mid="'.$row['id'].'">';
-                            echo          loopNbsp($level*3);
-                            echo '        <i class="fa fa-chevron-down" aria-hidden="true" style="display: none;"></i>';
-                            echo '        <i class="fa fa-chevron-right" aria-hidden="true"></i>';
-                            echo '    </td>';
-                            echo '    <td><a href="'.$row['href'].'">'.$row['name'].'</a></td>';
-                            echo '    <td><i class="'.$row['icon'].'" aria-hidden="true"></i></td>';
-                            echo '    <td>'.$row['permission'].'</td>';
-                            echo '    <td>'.$row['sort'].'</td>';
-                            echo '    <td class="text-overflow-ellipsis" style="max-width:120px;" title="'.$row['remark'].'">'.$row['remark'].'</td>';
-                            echo '    <td class="fromUnixtimestamp">'.$row['create_time'].'</td>';
-                            echo '    <td>';
-                            echo '        <button class="btn btn-primary btn-sm" onclick="additbox.edit(\'修改 - '.$row['name'].'\', $(\'#tablerow_'.$row['id'].'\').html());">修改</button>';
-                            echo '        <button class="btn btn-danger btn-sm" onclick="dis(\''.$row['id'].'\', 1);">删除</button>';
-                            echo '    </td>';
-                            echo '</tr>';
+            function subMenuOutput($menus=[], $level=0, $pid=''){
+                echo '<div class="col-md-12" style="'.($level > 0 ? 'display: none;' : '').'" pid="'.$pid.'">';
+                foreach($menus as $k=>$row){
+                    echo '<div class="col-md-12">';
+                    echo '    <data style="display:none;" id="tablerow_'.$row['id'].'">';
+                    echo          json_encode($row);
+                    echo '    </data>';
+                    echo '    <div class="col-md-1 subhidden" style="cursor: pointer; user-select: none;" onclick="opeSubMenu($(this));" mid="'.$row['id'].'">';
+                    echo          loopNbsp($level*3);
+                    echo '        <i class="fa fa-chevron-down" aria-hidden="true" style="display: none;"></i>';
+                    echo '        <i class="fa fa-chevron-right" aria-hidden="true"></i>';
+                    echo '    </div>';
+                    echo '    <div class="col-md-3"><i class="'.$row['icon'].'" aria-hidden="true"></i> <a href="'.$row['href'].'">'.$row['name'].'</a></div>';
+                    echo '    <div class="col-md-2">'.$row['permission'].'</div>';
+                    echo '    <div class="col-md-1">'.$row['sort'].'</div>';
+                    echo '    <div class="col-md-1">'.($row['hidden'] == 1 ? '否' : '是').'</div>';
+                    echo '    <div class="col-md-2 fromUnixtimestamp" style="width: 16.66666667%;">'.$row['create_time'].'</div>';
+                    echo '    <div class="col-md-2">';
+                    echo '        <button class="btn btn-primary btn-sm" onclick="additbox.edit(\'修改 - '.$row['name'].'\', $(\'#tablerow_'.$row['id'].'\').html());">修改</button>';
+                    echo '        <button class="btn btn-danger btn-sm" onclick="dis(\''.$row['id'].'\', 1);">删除</button>';
+                    echo '    </div>';
+                    echo '</div>';
 
-                            if(isset($row['subMenus']) && is_array($row['subMenus'])){
-                                subMenuOutput($row['subMenus'], $level+1);
-                            }
-                        }
+                    if(isset($row['subMenus']) && is_array($row['subMenus'])){
+                        subMenuOutput($row['subMenus'], $level+1, $row['id']);
                     }
-                    subMenuOutput($data['rows'], 0);
-                {/php}
-            </tbody>
-        </table>
+                }
+                echo '</div>';
+            }
+            subMenuOutput($data['rows'], 0, '');
+        {/php}
         <script>
             function opeSubMenu(obj){
                 if(obj.hasClass('subhidden')){
@@ -83,13 +82,13 @@
                     obj.children('.fa-chevron-down').show();
                     obj.children('.fa-chevron-right').hide();
 
-                    $('tr[pid='+obj.attr('mid')+']').show();
+                    $('div[pid='+obj.attr('mid')+']').slideDown();
                 }else{
                     obj.addClass('subhidden');
                     obj.children('.fa-chevron-down').hide();
                     obj.children('.fa-chevron-right').show();
 
-                    $('tr[pid='+obj.attr('mid')+']').hide();
+                    $('div[pid='+obj.attr('mid')+']').slideUp();
                 }
                 obj.parent().show();
             }
@@ -170,7 +169,7 @@
             </tr>
             <tr>
                 <td class="">标识符</td>
-                <td><input type="text" class="form-control" name="remark" placeholder="" /></td>
+                <td><input type="text" class="form-control" name="permission" placeholder="推荐格式: module:controller:action" /></td>
             </tr>
             <tr>
                 <td class="">序号</td>

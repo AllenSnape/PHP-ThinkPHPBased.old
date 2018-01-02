@@ -87,6 +87,7 @@ class User extends AdminBaseModel{
             }
             session_abort();
         }
+        return true;
     }
 
 }

@@ -50,8 +50,11 @@ class Index extends AdminBaseController{
         else if($user['disabled'] == 1){
             return $this->json_error('您的账号已被禁用, 请联系超级管理员处理!');
         }
+
         // 设置session中已登录的用户
         Session::set(AdminBaseController::USER_SESSION_CODE, $user);
+        // 设置用户可访问菜单
+        $user->setPermissions();
 
         // 添加登陆记录
         $request = Request::instance();

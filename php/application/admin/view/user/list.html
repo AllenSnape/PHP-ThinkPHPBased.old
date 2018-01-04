@@ -20,6 +20,7 @@
         </div>
         <div class="col-md-6" align="right">
             <button class="btn btn-default" onclick="additbox.add();">添加管理员</button>
+            <button class="btn btn-default" onclick="$.ajax({ url: 'cleanUserPermissionsCache.html?ajax', succeeded: function(data){layer.alert(data.message, {icon: 1});}});">清空所有管理员权限缓存</button>
         </div>
     </div>
 

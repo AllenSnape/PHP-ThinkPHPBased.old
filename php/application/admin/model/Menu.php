@@ -121,7 +121,7 @@ class Menu extends AdminBaseModel{
      */
     public static function getCacheMenus(){
         $menus = Cache::get(self::CACHE_KEY);
-        return is_null($menus) ? self::cacheMenus() : $menus;
+        return $menus === false ? self::setCacheMenus() : $menus;
     }
 
 }

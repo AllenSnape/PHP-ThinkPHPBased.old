@@ -159,7 +159,7 @@ class User extends AdminBaseController{
     public function setUserRoles($userid=null, $roleids=null){
         // 检查参数
         if(!$this->hasText($userid)){
-            return $this->json_error('管理员id参数不存在!');
+            return $this->json_error('管理员id参数错误!');
         }
 
         // 检查角色id的json集合
@@ -195,6 +195,13 @@ class User extends AdminBaseController{
         }
 
         return $this->json_success('操作成功!');
+    }
+
+    /**
+     * 清空管理员菜单权限缓存
+     */
+    public function cleanUserPermissionsCache($userid=null){
+        return UserModel::removePermissionCacheStatically($userid) ? $this->json_success('操作成功!') : $this->json_error('操作失败!');
     }
 
 }

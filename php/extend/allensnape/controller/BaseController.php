@@ -2,6 +2,7 @@
 namespace allensnape\controller;
 
 use think\Session;
+use think\Request;
 use think\Controller;
 
 use allensnape\utils\StringUtil;
@@ -24,14 +25,12 @@ class BaseController extends Controller
     }
 
     // 返回规定格式的成功json数据
-    protected function json_success($msg='', $data=null)
-    {
+    protected function json_success($msg='', $data=null){
         return $this->json_normal(1, $msg, $data);
     }
 
     // 返回规定格式的失败json数据
-    protected function json_error($msg='', $data=null)
-    {
+    protected function json_error($msg='', $data=null){
         return $this->json_normal(-1, $msg, $data);
     }
 
@@ -43,7 +42,7 @@ class BaseController extends Controller
     }
 
     // 获取ip地址
-    protected function get_client_ip($type = 0) {
+    protected function get_client_ip($type = 0){
         $type       =  $type ? 1 : 0;
         static $ip  =   NULL;
         if ($ip !== NULL) return $ip[$type];
@@ -75,7 +74,7 @@ class BaseController extends Controller
     }
 
     // 获取UserAgent
-    protected function get_client_browser($glue = null) {
+    protected function get_client_browser($glue = null){
         $browser = array();
         $agent = $_SERVER['HTTP_USER_AGENT']; //获取客户端信息
         
@@ -97,23 +96,26 @@ class BaseController extends Controller
         return empty($browser) ? false : (is_null($glue) ? $browser : implode($glue, $browser));
     }
 
-    public function isEmpty($str){
+    protected function isEmpty($str){
         return StringUtil::isEmpty($str);
     }
     
-    public function hasText($str){
+    protected function hasText($str){
         return StringUtil::hasText($str);
     }
     
-    // 判断参数是否为0或1
-    public function is0Or1($num){
+    /**
+     * 判断参数是否为0或1
+     * @param any:num 判断的字符串
+     */
+    protected function is0Or1($num){
         return $num == '0' || $num == '1' ? true : false;
     }
 
     /**
      * 生成验证码
      */
-    public function getCodeImage($num=6, $w=80, $h=25, $session=null) {
+    protected function getCodeImage($num=6, $w=80, $h=25, $session=null) {
         ob_end_clean();
         header("content-type:image/png");
         $code = "";
@@ -155,7 +157,28 @@ class BaseController extends Controller
         imagedestroy($im);//释放图片所占内存
     }
 
-    // 获取所有sessionId
+    /**
+     * 错误信息的跳转, 自动识别普通请求与ajax请求
+     * @param string:msg      显示的信息
+     * @param integer:result  错误代码
+     * @param string:location 重定向的地址
+     * @param integer:timeout 自动跳转的时间(秒)
+     */
+    protected function errorJump($msg=null, $result=0, $location='/', $timeout=3){
+        $request = Request::instance();
+        if($request->isAjax() || isset($request->param()['ajax']))
+        {
+            $this->error($this->json_normal($result, $msg)->getContent(), null, '', $timeout, ['content-type'=>'application/json; charset=utf-8'], true);
+        }
+        else
+        {
+            $this->error($msg.' error: '.$result, $location, $timeout);
+        }
+    }
+
+    /**
+     * 获取所有sessionId
+     */
     public static function getAllSessionIDs(){
         $allSessionIDs = [];
         $sessionNames = scandir(session_save_path());

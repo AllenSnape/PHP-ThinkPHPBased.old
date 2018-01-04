@@ -75,7 +75,8 @@ class Home extends AdminBaseController{
      */
     public function homePage(){
         $this->assign('title', '管理系统');
-        $this->assign('menus', Menu::getCacheMenus());
+        $user = Session::get(parent::USER_SESSION_CODE);
+        $this->assign('menus', Menu::getFormattedMenus($user->loadPermissions()));
         return $this->fetch('home/home');
     }
     

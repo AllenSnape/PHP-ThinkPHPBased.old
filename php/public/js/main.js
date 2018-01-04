@@ -15,7 +15,7 @@ $.ajaxSetup({
                 this.succeeded(data);
             }else{
                 if(!this.failed(data)){
-                    if(data.result == -1) layer.alert(data.message, {icon: 5});
+                    if([-1, 403].includes(data.result)) layer.alert(data.message, {icon: 5});
                     else if(data.result == 401) layer.alert(data.message, {icon: 5, yes: function(index, layero){top.location.reload();}});
                 }
             }

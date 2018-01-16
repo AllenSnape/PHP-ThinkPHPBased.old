@@ -8,12 +8,12 @@ class WeChatUtil{
     /**
      * 公众号的唯一标识
      */
-    const appid = 'wx00badc0b0f2bcacb';
+    const appid = '';
 
     /**
      * 公众号的appsecret
      */
-    const secret = 'ad8c71690b84e121f93b3124cb12216f';
+    const secret = '';
 
     /**
      * 发送get或者post请求

@@ -1,9 +1,7 @@
 <?php
 namespace allensnape\utils;
 
-
-class StringUtil
-{
+class StringUtil{
 
     // 获取加密的密码
     public static function getSaltedPassword($source=null, $salt=null, $round=1024)

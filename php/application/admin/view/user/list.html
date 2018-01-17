@@ -180,10 +180,6 @@
                 var box = options.box;
                 box.find('input[name=password]').attr('placeholder', '至少6位的任意字符; 不输入则不修改');
                 return true;
-            },
-            beforeSave: function(options, data){
-                data['is_admin'] = 1;
-                return true;
             }
         });
 

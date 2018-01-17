@@ -58,7 +58,9 @@ $(function(){
     $(".fromUnixtimestamp").each(function(index, item){
         try{
             var date = new Date($(item).html()*1000);
-            $(item).html(getFormattedTime(date));
+            item = $(item);
+            var prefix = item.attr('prefix'), suffix = item.attr('suffix'), dateonly = item.attr('dateonly');
+            item.html((prefix ? prefix : '')+getFormattedTime(date, dateonly ? true : false)+(suffix ? suffix : ''));
         }catch(e){
             log.error(e);
         }
@@ -66,9 +68,10 @@ $(function(){
 });
 
 // 获取格式化后的时间
-function getFormattedTime(date){
+function getFormattedTime(date, dateonly){
     date = date ? date : new Date();
-    return date.getFullYear()+"-"+(date.getMonth() < 9 ? '0' : '')+(date.getMonth()+1)+"-"+(date.getDate() < 10 ? '0' : '')+date.getDate()+" "+(date.getHours() < 10 ? '0' : '')+date.getHours()+":"+(date.getMinutes() < 10 ? '0' : '')+date.getMinutes()+":"+(date.getSeconds() < 10 ? '0' : '')+date.getSeconds();
+    return date.getFullYear()+"-"+(date.getMonth() < 9 ? '0' : '')+(date.getMonth()+1)+"-"+(date.getDate() < 10 ? '0' : '')+date.getDate()+
+        (!dateonly ? " "+(date.getHours() < 10 ? '0' : '')+date.getHours()+":"+(date.getMinutes() < 10 ? '0' : '')+date.getMinutes()+":"+(date.getSeconds() < 10 ? '0' : '')+date.getSeconds() : '');
 }
 
 // 获取cookie

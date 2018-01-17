@@ -11,13 +11,15 @@ function initAdditbox(options){
         editURL:        'edit.html?ajax',
         // 下方回调中第一个参数就是defaultOptions的引用
         // 添加时的回调; 返回true会清理输入框的内容
-        beforeAdd:      function(options){return true;},
+        beforeAdd:           function(options){return true;},
         // 弹出修改窗之前的回调; 返回true会清理输入框的内容
-        beforeEdit:     function(options, title, data){return true;},
+        beforeEdit:          function(options, title, data){return true;},
+        // 在修改框填充数据之后
+        afterEditDataFilled: function(options, data){return true;},
         // 保存之前的回调, 返回非true时停止提交; 该对象必须存在, 不然无法进行提交; otherOptions是调用save方法时传的参数
-        beforeSave:     function(options, data, otherOptions){return true},
+        beforeSave:          function(options, data, otherOptions){return true;},
         // 提交成功后的回调
-        afterSaved:     function(options, data){reload();return true;}
+        afterSaved:          function(options, data){reload();return true;}
     };
     for(var o in defaultOptions){
         if(options[o]){
@@ -74,6 +76,10 @@ function initAdditbox(options){
                 this.showAdditbox(title, defaultOptions['editURL']);
                 for(var field in data){
                     defaultOptions['box'].find('[name='+field+']').val(data[field]);
+                }
+
+                if(defaultOptions['afterEditDataFilled'] && defaultOptions['afterEditDataFilled'] instanceof Function){
+                    if(defaultOptions['afterEditDataFilled'].call(this, defaultOptions, data) === true){}
                 }
             }catch(e){
                 layer.syserror(e);

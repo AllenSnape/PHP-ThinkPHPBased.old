@@ -12,7 +12,9 @@
             <button class="btn btn-default" onclick="reload();">刷新</button>
         </div>
         <div class="col-md-10" align="right">
-            <button class="btn btn-default" onclick="additbox.add();">添加菜单</button>
+            {if condition=" :userHasPermissions(['admin:menu:add'])"}
+                <button class="btn btn-default" onclick="additbox.add();">添加菜单</button>
+            {/if}
         </div>
     </div>
 
@@ -62,8 +64,12 @@
                     echo '    <div class="col-md-1">'.($row['hidden'] == 1 ? '否' : '是').'</div>';
                     echo '    <div class="col-md-2 fromUnixtimestamp" style="width: 16.66666667%;">'.$row['create_time'].'</div>';
                     echo '    <div class="col-md-2">';
-                    echo '        <button class="btn btn-primary btn-sm" onclick="additbox.edit(\'修改 - '.$row['name'].'\', $(\'#tablerow_'.$row['id'].'\').html());">修改</button>';
-                    echo '        <button class="btn btn-danger btn-sm" onclick="dis(\''.$row['id'].'\', 1);">删除</button>';
+                    if(userHasPermissions(['admin:menu:edit'])){
+                        echo '        <button class="btn btn-primary btn-sm" onclick="additbox.edit(\'修改 - '.$row['name'].'\', $(\'#tablerow_'.$row['id'].'\').html());">修改</button>';
+                    }
+                    if(userHasPermissions(['admin:menu:dis'])){
+                        echo '        <button class="btn btn-danger btn-sm" onclick="dis(\''.$row['id'].'\', 1);">删除</button>';
+                    }
                     echo '    </div>';
                     echo '</div>';
 

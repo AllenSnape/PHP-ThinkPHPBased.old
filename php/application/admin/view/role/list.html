@@ -16,7 +16,9 @@
             <button class="btn btn-default" onclick="reload();">刷新</button>
         </div>
         <div class="col-md-8" align="right">
-            <button class="btn btn-default" onclick="additbox.add();">添加角色</button>
+            {if condition=" :userHasPermissions(['admin:role:add'])"}
+                <button class="btn btn-default" onclick="additbox.add();">添加角色</button>
+            {/if}
         </div>
     </div>
 
@@ -42,9 +44,15 @@
                         <td class="text-overflow-ellipsis" style="max-width:120px;" title="{$row.remark}">{$row.remark}</td>
                         <td class="fromUnixtimestamp">{$row.create_time}</td>
                         <td>
-                            <button class="btn btn-primary btn-sm" onclick="additbox.edit('修改 - {$row.title}', $('#tablerow_{$row.id}').html());">修改</button>
-                            <button class="btn btn-primary btn-sm" onclick="showMenuSelector('{$row.id}');">菜单设置</button>
-                            <button class="btn btn-{$row.disabled == 0 ? 'danger' : 'success'} btn-sm" onclick="dis('{$row.id}', {$row.disabled == 0 ? 1 : 0});">{$row.disabled == 0 ? '禁用' : '启用'}</button>
+                            {if condition=" :userHasPermissions(['admin:role:edit'])"}
+                                <button class="btn btn-primary btn-sm" onclick="additbox.edit('修改 - {$row.title}', $('#tablerow_{$row.id}').html());">修改</button>
+                            {/if}
+                            {if condition=" :userHasPermissions(['admin:role:setRoleMenus'])"}
+                                <button class="btn btn-primary btn-sm" onclick="showMenuSelector('{$row.id}');">菜单设置</button>
+                            {/if}
+                            {if condition=" :userHasPermissions(['admin:role:dis'])"}
+                                <button class="btn btn-{$row.disabled == 0 ? 'danger' : 'success'} btn-sm" onclick="dis('{$row.id}', {$row.disabled == 0 ? 1 : 0});">{$row.disabled == 0 ? '禁用' : '启用'}</button>
+                            {/if}
                         </td>
                     </tr>
                 {/volist}

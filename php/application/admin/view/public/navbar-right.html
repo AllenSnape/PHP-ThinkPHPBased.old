@@ -1,3 +1,9 @@
-<li><a href="#" onclick="$('#staticResourceUploader').trigger('click');"><span class="glyphicon glyphicon-plus"></span> 静态资源上传</a></li>
-<li><a href="#" onclick="showEditinfoBox();"><span class="glyphicon glyphicon-user"></span> 修改密码</a></li>
-<li><a href="#" onclick="logout();"><span class="glyphicon glyphicon-log-out"></span> 登出</a></li>
+{if condition=" :userHasPermissions(['admin:home:upload'])"}
+    <li><a href="#" onclick="$('#staticResourceUploader').trigger('click');"><span class="glyphicon glyphicon-plus"></span> 静态资源上传</a></li>
+{/if}
+{if condition=" :userHasPermissions(['admin:user:editinfo'])"}
+    <li><a href="#" onclick="showEditinfoBox();"><span class="glyphicon glyphicon-user"></span> 修改密码</a></li>
+{/if}
+{if condition=" :userHasPermissions(['admin:user:logout'])"}
+    <li><a href="#" onclick="logout();"><span class="glyphicon glyphicon-log-out"></span> 登出</a></li>
+{/if}

@@ -30,7 +30,7 @@
         </div>
     </div>
     <script>
-        $(function(){
+        /* $(function(){
             if(top !== window){
                 top.location.href = location.href;
             }else{
@@ -42,7 +42,7 @@
                     }
                 });
             }
-    	});
+    	}); */
 
         function login(){
             var loginform = $("#loginform");
@@ -73,7 +73,7 @@
                     code: code
                 },
                 succeeded: function(data){
-                    location.href = "../home/homePage.html";
+                    //location.href = "../home/homePage.html";
                 },
                 failed: function(data){
                     loginform.find("input[name=code]").next().trigger("click");

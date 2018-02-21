@@ -5,7 +5,7 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 
-		<title>{$title??'管理系统'}</title>
+		<title>{$title??'用户登陆'}</title>
 
 		<!-- jQuery -->
 		<script src="__ROOT__/static/jquery/dist/jquery.min.js"></script>
@@ -26,35 +26,9 @@
 		<link href="__ROOT__/static/pace/themes/blue/pace-theme-minimal.css" rel="stylesheet" />
 
 		<!-- 自定义样式 -->
-        <link rel="stylesheet" href="__ROOT__/css/admin/main.css">
+        <link rel="stylesheet" href="__ROOT__/css/member/main.css">
 		<!-- 自定义方法 -->
 		<script src="__ROOT__/js/main.js"></script>
-		<script>
-			// 带默认参数刷新页面
-			function reload(){
-				location.href = '{$defaultParams??"?"}';
-			}
-
-			/**
-			* 上传图片集成方法
-			* @param input标签 input 文件input标签
-			* @param Funtion callback 成功获取信息后的回调
-			*/
-			function uploadFile(input, callback){
-				var formData = new FormData();
-				formData.append("file", $(input)[0].files[0]);
-				$.ajax({
-					url: "__ROOT__/index.php/admin/home/upload",
-					data: formData,
-					processData: false, 
-					contentType: false,
-					succeeded: function(data){
-						if(callback instanceof Function) callback('__ROOT__' + data.data.replace(/\\/gi, '/'));
-					}
-				});
-			}
-		</script>
-
 	</head>
 	<body>
 		<input id="staticResourceUploader" type="file" style="display:none;" onchange="uploadFile(this, function(src){layer.alert('资源路径为(仅限本系统使用): <a href='+src+' target=_block>'+src+'</a>');});" />

@@ -6,8 +6,8 @@ class StringUtil{
     // 获取加密的密码
     public static function getSaltedPassword($source=null, $salt=null, $round=1024)
     {
-        if($source == null) throw new \Exception('source password can\'t be null.');
-        if($salt == null) $salt = rand(0, getrandmax());
+        if(is_null($source)) throw new \Exception('source password can\'t be null.');
+        if(is_null($salt)) $salt = rand(0, getrandmax());
         for($i = 0; $i < $round; $i++){
             $source = md5($source.($i != 0 ? md5($salt) : ''));
         }

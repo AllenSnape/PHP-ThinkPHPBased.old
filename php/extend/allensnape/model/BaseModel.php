@@ -181,7 +181,7 @@ abstract class BaseModel extends Model
     /**
      * 限制字段值在提供的数组元素内
      * @param array:fields 限制的字段
-     * @param array:values  限制的值
+     * @param array:values 限制的值
      */
     public function parseFieldsInArray($fields=['disabled'], $values=[0, 1]){
         foreach($fields as $fk=>$field)
